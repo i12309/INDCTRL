@@ -47,7 +47,7 @@ docker compose ps
 
 - `http://localhost/health/` - health Django `control-web`;
 - `http://localhost/api/auth/health` - health `auth-service` через Nginx;
-- `http://localhost/event/health` - health `event-service` через Nginx.
+- `http://localhost/api/events/health` - health `event-service` через Nginx.
 
 ## Команды Docker Compose
 

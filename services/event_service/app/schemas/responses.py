@@ -8,3 +8,17 @@ class HealthResponse(BaseModel):
 
     status: str
     service: str
+
+
+class StatusResponse(BaseModel):
+    """Ответ успешной обработки события."""
+
+    success: bool
+    status: str
+
+
+class ErrorResponse(BaseModel):
+    """Единый ответ на ошибку обработки события."""
+
+    success: bool
+    error: str

@@ -1,10 +1,18 @@
 """Тесты бизнес-логики auth-service без реальной PostgreSQL-БД."""
 
+import sys
 from datetime import datetime, time
+from pathlib import Path
 from types import SimpleNamespace
 from uuid import UUID, uuid4
 
 import pytest
+
+SERVICE_PATH = Path(__file__).resolve().parents[2] / "services" / "auth_service"
+sys.path.insert(0, str(SERVICE_PATH))
+for module_name in list(sys.modules):
+    if module_name == "app" or module_name.startswith("app."):
+        del sys.modules[module_name]
 
 from app.services.auth_service import AuthService
 from control_common.errors import (
