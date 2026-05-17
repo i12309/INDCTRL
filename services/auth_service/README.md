@@ -22,6 +22,7 @@ docker compose up -d --build auth-service
 ## Endpoint'ы
 
 - `GET /health` - состояние сервиса.
+- `GET /health-auth/` - состояние сервиса через Nginx.
 - `POST /api/auth/device/workers` - список работников, доступных на станке сейчас.
 - `POST /api/auth/login` - вход работника, создание `Work` и `AuthSession`.
 - `POST /api/auth/logout` - завершение смены.

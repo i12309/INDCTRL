@@ -6,7 +6,7 @@ build:
 	$(COMPOSE) build
 
 up:
-	$(COMPOSE) up -d --build
+	$(COMPOSE) up -d
 
 down:
 	$(COMPOSE) down
@@ -30,11 +30,11 @@ test:
 	pytest
 
 lint:
-	ruff check common services tests
+	python -m ruff check common services tests
 
 format:
 	black common services tests
-	ruff check --fix common services tests
+	python -m ruff check --fix common services tests
 
 backup:
 	bash deploy/scripts/backup_postgres.sh

@@ -5,7 +5,7 @@
 Основные endpoint'ы:
 
 - `GET /health`;
-- `GET /api/events/health`;
+- `GET /health-events/` через Nginx;
 - `POST /api/events/detail`.
 
 `sessionID` является главным источником `user_id`, `machine_id` и `work_id`; значения

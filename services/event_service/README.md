@@ -28,7 +28,7 @@ ESP32 не является доверенным источником `userID`, 
 ## Endpoint'ы
 
 - `GET /health` - состояние сервиса внутри Docker-сети.
-- `GET /api/events/health` - состояние сервиса через Nginx.
+- `GET /health-events/` - состояние сервиса через Nginx.
 - `POST /api/events/detail` - прием события детали.
 
 Ответ новой детали:
