@@ -1,26 +1,72 @@
 # control-web
 
-Назначение: Django admin, dashboard, отчеты, экспорт CSV/XLSX и миграции БД.
+`control-web` - Django-сервис для административного управления, dashboard,
+отчетов, экспорта CSV/XLSX и миграций общей PostgreSQL-БД.
 
-## Доступ
+## Основные URL
 
-Dashboard и отчеты доступны ролям `admin`, `director`, `manager`. Роль `worker` не
-имеет доступа к управленческим страницам.
+### /admin/
 
-## Dashboard
+Назначение: Django admin для управления справочниками и настройками.
 
-- `GET /dashboard/current-workers/` - активные смены: станок, работник, начало смены,
-  последний heartbeat и статус связи.
+Через admin редактируются роли, пользователи, станки, ESP32-устройства, типы
+деталей, состояния деталей, разрешения и расписания. `Detail` и `InvalidEvent`
+в admin доступны как диагностические данные; детали штатно создаются только
+через `event-service`.
 
-Статус связи считается по `HEARTBEAT_MAX_AGE_SECONDS`: свежий heartbeat означает
-активную связь, старый heartbeat - устаревшую связь, пустой heartbeat - устройство
-еще не присылало сигнал после входа.
+### /dashboard/current-workers/
 
-## Отчет по деталям
+Назначение: показать активные смены: работник, станок, время начала, последний
+heartbeat и состояние связи.
 
-- `GET /reports/details/` - таблица деталей с фильтрами и пагинацией;
-- `GET /reports/details/export/csv/` - CSV-экспорт с теми же фильтрами;
-- `GET /reports/details/export/xlsx/` - Excel-экспорт с теми же фильтрами.
+Источник данных: `works` со статусом `active`, связанные `users`, `machines` и
+`devices`.
 
-Фильтры: дата с, дата по, станок, работник, смена, тип детали, состояние детали.
-В первой версии экспорт ограничен 100 000 строками.
+### /reports/details/
+
+Назначение: HTML-отчет по произведенным деталям.
+
+Поддерживаются фильтры: дата с, дата по, станок, работник, смена, тип детали,
+состояние детали. На странице есть пагинация и итоги.
+
+### /reports/details/export/csv/
+
+Назначение: CSV-экспорт отчета деталей с теми же фильтрами, что и HTML-отчет.
+
+Экспорт ограничен лимитом строк, чтобы случайный запрос не перегрузил сервер.
+
+### /reports/details/export/xlsx/
+
+Назначение: XLSX-экспорт отчета деталей с теми же фильтрами и итогами.
+
+Файл формируется сервисным кодом `apps.reports.services`.
+
+## Роли и доступ
+
+```text
+admin      доступ к /admin/, dashboard и reports
+director   доступ к dashboard и reports
+manager    доступ к dashboard и reports
+worker     нет доступа к reports и dashboard в первой версии
+```
+
+Дополнительно для `/admin/` пользователь должен иметь `is_staff=true`.
+Django superuser имеет полный доступ.
+
+Проверка доступа к dashboard и reports вынесена в `apps.access`: разрешены роли
+`admin`, `director`, `manager`, а также superuser.
+
+## Служебные URL
+
+- `GET /health/` - health endpoint внутри Docker-сети;
+- `GET /health-web/` - health endpoint через Nginx.
+
+## Миграции и static files
+
+```bash
+docker compose exec control-web python manage.py migrate
+docker compose exec control-web python manage.py collectstatic --noinput
+```
+
+Django-модели и миграции `control-web` являются источником структуры БД для
+всех сервисов INDCTRL.

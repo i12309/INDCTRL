@@ -10,7 +10,7 @@ PostgreSQL-БД.
   создания смен, heartbeat и logout.
 - `event-service` - FastAPI-сервис приема событий о произведенных деталях от ESP32.
 - `control-web` - Django-сервис с административной панелью, dashboard, отчетами и
-  будущими миграциями БД.
+  миграциями БД.
 - `postgres` - общая PostgreSQL-БД.
 - `nginx` - единая HTTP-точка входа.
 
@@ -77,8 +77,11 @@ make backup
 - `docs/database.md` - БД и миграции;
 - `docs/docker.md` - контейнеры;
 - `docs/env.md` - переменные окружения;
+- `docs/esp32-api.md` - последовательность работы ESP32 и примеры JSON;
+- `docs/final-checklist.md` - финальный чеклист приемки;
 - `docs/services/` - документы сервисов;
-- `docs/linux/` - эксплуатация на Linux;
+- `docs/linux/runbook.md` - общий runbook эксплуатации на Linux;
+- `docs/linux/` - дополнительные инструкции Linux;
 - `docs/backup/` - резервное копирование PostgreSQL.
 
 ## Логи
