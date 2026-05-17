@@ -67,6 +67,7 @@ make backup
 - [docs/docker.md](docs/docker.md) - Docker Compose;
 - [docs/env.md](docs/env.md) - переменные окружения;
 - [docs/esp32-api.md](docs/esp32-api.md) - API для ESP32;
+- [docs/web-interface.md](docs/web-interface.md) - web-интерфейс и роли;
 - [docs/service.md](docs/service.md) - Django-сервис;
 - [docs/linux/runbook.md](docs/linux/runbook.md) - runbook Linux-сервера;
 - [docs/backup/](docs/backup) - backup и restore PostgreSQL;

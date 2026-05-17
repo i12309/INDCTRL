@@ -4,9 +4,10 @@ import csv
 
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from apps.access import report_access_required
+from apps.production.models import InvalidEvent
 from apps.reports.forms import DetailReportFilterForm
 from apps.reports.services import (
     build_detail_queryset,
@@ -19,9 +20,9 @@ from apps.reports.services import (
 
 @report_access_required
 def index(_request: HttpRequest) -> HttpResponse:
-    """Показать временную страницу раздела отчетов."""
+    """Открыть основной отчет раздела."""
 
-    return HttpResponse("INDCTRL reports")
+    return redirect("reports:details")
 
 
 @report_access_required
@@ -44,6 +45,7 @@ def details(request: HttpRequest) -> HttpResponse:
             "page_obj": page_obj,
             "query_string": query_params.urlencode(),
             "totals": totals,
+            "page_title": "Отчет по деталям",
         },
     )
 
@@ -83,3 +85,19 @@ def details_export_xlsx(request: HttpRequest) -> HttpResponse:
         return HttpResponse(str(exc), status=400)
 
     return build_xlsx_response(queryset, calculate_totals(queryset))
+
+
+@report_access_required
+def invalid_events(request: HttpRequest) -> HttpResponse:
+    """Показать некорректные события API для диагностики."""
+
+    queryset = InvalidEvent.objects.order_by("-received_at", "-id")
+    paginator = Paginator(queryset, 50)
+    return render(
+        request,
+        "reports/invalid_events.html",
+        {
+            "page_obj": paginator.get_page(request.GET.get("page")),
+            "page_title": "Некорректные события",
+        },
+    )

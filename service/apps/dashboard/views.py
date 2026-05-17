@@ -1,17 +1,46 @@
 """Представления dashboard."""
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.views.decorators.http import require_GET
 
-from apps.access import report_access_required
-from apps.dashboard.services import get_current_workers
+from apps.access import can_view_reports, report_access_required
+from apps.dashboard.forms import RoleLoginForm
+from apps.dashboard.services import get_current_workers, get_dashboard_summary
 
 
-@report_access_required
-def index(_request: HttpRequest) -> HttpResponse:
-    """Показать временную страницу dashboard."""
+class RoleLoginView(LoginView):
+    """Панель авторизации с выбором роли пользователя."""
 
-    return HttpResponse("INDCTRL dashboard")
+    authentication_form = RoleLoginForm
+    template_name = "registration/login.html"
+    redirect_authenticated_user = True
+
+
+@login_required
+@require_GET
+def index(request: HttpRequest) -> HttpResponse:
+    """Показать главную страницу единого интерфейса."""
+
+    summary = get_dashboard_summary() if can_view_reports(request.user) else None
+    return render(
+        request,
+        "dashboard/index.html",
+        {
+            "summary": summary,
+            "page_title": "Главная",
+        },
+    )
+
+
+def root(request: HttpRequest) -> HttpResponse:
+    """Открыть главный интерфейс или панель входа."""
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+    return redirect("dashboard:index")
 
 
 @report_access_required
@@ -21,5 +50,8 @@ def current_workers(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "dashboard/current_workers.html",
-        {"rows": get_current_workers()},
+        {
+            "rows": get_current_workers(),
+            "page_title": "Текущие смены",
+        },
     )

@@ -4,6 +4,8 @@
 [ ] docker compose up -d --build работает
 [ ] миграции применяются через indctrl
 [ ] superuser создается
+[ ] /login/ открывается
+[ ] вход проверяет выбранную роль
 [ ] /admin/ открывается
 [ ] создан Machine
 [ ] создан Device с macAddress
@@ -15,8 +17,10 @@
 [ ] POST /api/device/detail сохраняет Detail
 [ ] повтор detail возвращает duplicate
 [ ] POST /api/device/heartbeat обновляет last_seen_at
+[ ] dashboard показывает главную страницу
 [ ] dashboard показывает активную смену
 [ ] report details показывает деталь
+[ ] report invalid-events показывает ошибочные события
 [ ] CSV export работает
 [ ] XLSX export работает
 [ ] POST /api/device/logout закрывает смену

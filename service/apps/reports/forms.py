@@ -45,3 +45,10 @@ class DetailReportFilterForm(forms.Form):
         queryset=DetailState.objects.all().order_by("name"),
         required=False,
     )
+
+    def __init__(self, *args, **kwargs) -> None:
+        """Добавить Bootstrap-классы к полям фильтра."""
+
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-control"

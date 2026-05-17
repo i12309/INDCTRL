@@ -6,11 +6,14 @@ ESP32 и миграции.
 
 ## Web URL
 
+- `/login/` - панель авторизации с выбором роли;
 - `/admin/` - Django admin;
+- `/dashboard/` - главная страница единого интерфейса;
 - `/dashboard/current-workers/` - активные смены и состояние heartbeat;
 - `/reports/details/` - HTML-отчет по деталям;
 - `/reports/details/export/csv/` - CSV-экспорт;
 - `/reports/details/export/xlsx/` - XLSX-экспорт;
+- `/reports/invalid-events/` - некорректные события API;
 - `/health/` и `/health-web/` - health endpoint.
 
 ## API для ESP32
@@ -29,7 +32,7 @@ API реализован обычными Django JSON views в `apps.api`.
 admin      доступ к /admin/, dashboard и reports
 director   доступ к dashboard и reports
 manager    доступ к dashboard и reports
-worker     нет доступа к reports и dashboard в первой версии
+worker     вход в систему без управленческих разделов
 ```
 
 Для `/admin/` дополнительно нужен `is_staff=true`. Django superuser имеет полный

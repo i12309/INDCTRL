@@ -60,3 +60,27 @@ def test_esp32_api_uses_new_urls() -> None:
 
     assert "/api/auth" not in docs
     assert "/api/events" not in docs
+
+
+def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
+    """Единый web-интерфейс должен иметь вход, sidebar и Bootstrap."""
+
+    urls = read("service/config/urls.py")
+    base = read("service/templates/base.html")
+    login = read("service/templates/registration/login.html")
+
+    assert 'path("login/", RoleLoginView.as_view(), name="login")' in urls
+    assert "bootstrap@5.3.8" in base
+    assert "bootstrap@5.3.8" in login
+    for label in ("Админка", "Справочники", "Отчеты"):
+        assert label in base
+
+
+def test_reports_include_invalid_events_page() -> None:
+    """Некорректные события должны быть доступны как защищенный отчет."""
+
+    report_urls = read("service/apps/reports/urls.py")
+    report_views = read("service/apps/reports/views.py")
+
+    assert 'path("invalid-events/", views.invalid_events, name="invalid_events")' in report_urls
+    assert "@report_access_required\ndef invalid_events" in report_views
