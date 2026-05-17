@@ -7,6 +7,9 @@ cd /opt/INDCTRL
 bash deploy/scripts/backup_postgres.sh
 ```
 
+Подробности backup и проверки восстановления описаны в `docs/backup/postgres-backup.md`
+и `docs/backup/postgres-restore.md`.
+
 ## Обновление кода и контейнеров
 
 ```bash
