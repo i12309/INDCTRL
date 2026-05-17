@@ -56,8 +56,8 @@ class UserMachineSchedule(models.Model):
                 name="schedule_weekday_between_1_and_7",
             ),
             models.CheckConstraint(
-                check=Q(time_from__lte=models.F("time_to")),
-                name="schedule_time_from_lte_time_to",
+                check=Q(time_from__lt=models.F("time_to")),
+                name="schedule_time_from_lt_time_to",
             ),
         ]
         ordering = ["user", "machine", "weekday", "time_from"]
@@ -67,8 +67,8 @@ class UserMachineSchedule(models.Model):
     def clean(self) -> None:
         """Запретить расписание, которое пересекает полночь."""
 
-        if self.time_from and self.time_to and self.time_from > self.time_to:
-            raise ValidationError("В первой версии смена не может пересекать полночь")
+        if self.time_from and self.time_to and self.time_from >= self.time_to:
+            raise ValidationError("Время начала должно быть раньше времени окончания")
 
     def __str__(self) -> str:
         """Вернуть краткое описание расписания."""

@@ -1,5 +1,7 @@
 """Тесты бизнес-логики auth-service без реальной PostgreSQL-БД."""
 
+# ruff: noqa: E402
+
 import sys
 from datetime import datetime, time
 from pathlib import Path
@@ -15,13 +17,13 @@ for module_name in list(sys.modules):
         del sys.modules[module_name]
 
 from app.services.auth_service import AuthService
+
 from control_common.errors import (
     DeviceNotFoundError,
     MachineBusyError,
     ScheduleDeniedError,
     UserNotAllowedError,
 )
-
 
 DJANGO_HASH = "pbkdf2_sha256$720000$testsalt$1Gcs0kxgCMnRfX3SeHtQ/XAmc0Vp6UZQGId2xXfmeck="
 FIXED_NOW = datetime(2026, 5, 18, 10, 30)

@@ -4,8 +4,11 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
 
+from config.admin_site import configure_admin_site
 from control_common.constants import SERVICE_CONTROL_WEB
 from control_common.responses import health_response
+
+configure_admin_site()
 
 
 def health(_request):

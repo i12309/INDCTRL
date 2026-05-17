@@ -2,7 +2,6 @@
 
 from control_common.security import verify_django_password
 
-
 DJANGO_HASH = "pbkdf2_sha256$720000$testsalt$1Gcs0kxgCMnRfX3SeHtQ/XAmc0Vp6UZQGId2xXfmeck="
 
 

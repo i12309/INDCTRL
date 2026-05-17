@@ -93,8 +93,8 @@ class Migration(migrations.Migration):
                         name="schedule_weekday_between_1_and_7",
                     ),
                     models.CheckConstraint(
-                        check=models.Q(time_from__lte=models.F("time_to")),
-                        name="schedule_time_from_lte_time_to",
+                        check=models.Q(time_from__lt=models.F("time_to")),
+                        name="schedule_time_from_lt_time_to",
                     ),
                 ],
             },

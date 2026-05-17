@@ -2,7 +2,6 @@
 
 from django.db import migrations
 
-
 DETAIL_STATE_SEEDS = [
     ("working", "рабочая"),
     ("defect", "брак"),

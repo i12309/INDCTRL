@@ -1,5 +1,7 @@
 """Тесты бизнес-логики event-service без реальной PostgreSQL-БД."""
 
+# ruff: noqa: E402
+
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -14,8 +16,8 @@ for module_name in list(sys.modules):
         del sys.modules[module_name]
 
 from app.services.event_service import EventService
-from control_common.errors import SessionNotFoundError, ValidationError
 
+from control_common.errors import SessionNotFoundError, ValidationError
 
 FIXED_NOW = datetime(2026, 5, 18, 10, 30)
 SESSION_ID = UUID("11111111-1111-1111-1111-111111111111")

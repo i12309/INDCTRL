@@ -21,8 +21,8 @@ class UserAdmin(DjangoUserAdmin):
     """Админка кастомной модели пользователя."""
 
     model = User
-    list_display = ("username", "full_name", "role", "is_active", "is_staff", "is_superuser")
-    list_filter = ("role", "is_active", "is_staff", "is_superuser")
+    list_display = ("id", "username", "full_name", "role", "is_active", "is_staff")
+    list_filter = ("role", "is_active", "is_staff")
     search_fields = ("username", "full_name")
     ordering = ("username",)
     readonly_fields = ("created_at", "updated_at", "last_login")

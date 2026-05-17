@@ -9,7 +9,7 @@ from apps.machines.models import Device, Machine
 class MachineAdmin(admin.ModelAdmin):
     """Админка станков."""
 
-    list_display = ("name", "inventory_number", "is_active", "created_at", "updated_at")
+    list_display = ("id", "name", "inventory_number", "is_active")
     list_filter = ("is_active",)
     search_fields = ("name", "inventory_number", "comment")
     readonly_fields = ("created_at", "updated_at")
@@ -19,7 +19,7 @@ class MachineAdmin(admin.ModelAdmin):
 class DeviceAdmin(admin.ModelAdmin):
     """Админка ESP32-устройств."""
 
-    list_display = ("mac_address", "name", "machine", "is_active", "created_at", "updated_at")
+    list_display = ("id", "mac_address", "machine", "name", "is_active")
     list_filter = ("is_active", "machine")
     search_fields = ("mac_address", "name", "machine__name")
     readonly_fields = ("created_at", "updated_at")
