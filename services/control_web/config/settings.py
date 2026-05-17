@@ -1,0 +1,93 @@
+"""Настройки Django для сервиса control-web."""
+
+from pathlib import Path
+import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def env_bool(name: str, default: bool = False) -> bool:
+    """Прочитать булеву переменную окружения в формате, понятном администраторам."""
+
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name: str, default: str = "") -> list[str]:
+    """Разобрать переменную окружения со списком значений через запятую."""
+
+    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change_me")
+DEBUG = env_bool("DJANGO_DEBUG", default=False)
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "apps.accounts.apps.AccountsConfig",
+    "apps.machines.apps.MachinesConfig",
+    "apps.production.apps.ProductionConfig",
+    "apps.schedules.apps.SchedulesConfig",
+    "apps.reports.apps.ReportsConfig",
+    "apps.dashboard.apps.DashboardConfig",
+]
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+ROOT_URLCONF = "config.urls"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    }
+]
+
+WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "machine_control"),
+        "USER": os.getenv("POSTGRES_USER", "machine_control"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "change_me_strong_password"),
+        "HOST": os.getenv("POSTGRES_HOST", "postgres"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+    }
+}
+
+LANGUAGE_CODE = "ru-ru"
+TIME_ZONE = os.getenv("APP_TIMEZONE", "Europe/Berlin")
+USE_I18N = True
+USE_TZ = True
+
+STATIC_URL = "/static/"
+STATIC_ROOT = Path(os.getenv("DJANGO_STATIC_ROOT", "/app/staticfiles"))
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

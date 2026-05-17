@@ -1,0 +1,15 @@
+[Unit]
+Description=INDCTRL Docker Compose application
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/INDCTRL
+RemainAfterExit=yes
+ExecStart=/usr/bin/docker compose -f compose.production.yml up -d
+ExecStop=/usr/bin/docker compose -f compose.production.yml down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
