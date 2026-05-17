@@ -92,3 +92,4 @@ STATIC_ROOT = Path(os.getenv("DJANGO_STATIC_ROOT", "/app/staticfiles"))
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
+HEARTBEAT_MAX_AGE_SECONDS = int(os.getenv("HEARTBEAT_MAX_AGE_SECONDS", "180"))

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Текущая работа станков</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; color: #1f2937; }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+    th, td { border: 1px solid #d1d5db; padding: 8px 10px; text-align: left; }
+    th { background: #f3f4f6; }
+    .alive { color: #047857; font-weight: 700; }
+    .stale { color: #b45309; font-weight: 700; }
+    .no-heartbeat { color: #6b7280; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Текущая работа станков</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Станок</th>
+        <th>Работник</th>
+        <th>Начало смены</th>
+        <th>Последний heartbeat</th>
+        <th>Статус связи</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.machine_name }}</td>
+          <td>{{ row.worker_name }}</td>
+          <td>{{ row.started_at|date:"Y-m-d H:i:s" }}</td>
+          <td>{% if row.last_seen_at %}{{ row.last_seen_at|date:"Y-m-d H:i:s" }}{% else %}-{% endif %}</td>
+          <td class="{{ row.connection_status }}">{{ row.connection_label }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">Активных смен нет.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

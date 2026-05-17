@@ -68,12 +68,31 @@ Django superuser также имеет доступ.
 - `InvalidEvent` - некорректные события создаются сервисами и нужны для диагностики,
   поэтому в admin они доступны только для просмотра.
 
+## Dashboard и отчеты
+
+Доступ к dashboard и отчетам имеют роли `admin`, `director`, `manager`. Роль `worker`
+не имеет доступа.
+
+Dashboard:
+
+- `GET /dashboard/current-workers/` - активные смены, работник, станок, начало смены,
+  последний heartbeat и статус связи.
+
+Отчет по деталям:
+
+- `GET /reports/details/` - HTML-таблица деталей с пагинацией;
+- `GET /reports/details/export/csv/` - CSV-экспорт;
+- `GET /reports/details/export/xlsx/` - Excel-экспорт.
+
+Поддерживаются фильтры: дата с, дата по, станок, работник, смена, тип детали,
+состояние детали. Первая версия ограничивает экспорт 100 000 строками.
+
 ## Endpoint'ы
 
 - `GET /health/` - состояние Django-сервиса;
 - `GET /admin/` - Django admin;
-- `GET /dashboard/` - dashboard;
-- `GET /reports/` - отчеты.
+- `GET /dashboard/current-workers/` - dashboard текущей работы;
+- `GET /reports/details/` - отчет по деталям.
 
 ## Диагностика и логи
 
