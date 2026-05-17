@@ -1,5 +1,7 @@
 """Общие настройки окружения для сервисов INDCTRL."""
 
+from functools import lru_cache
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -23,7 +25,20 @@ class BaseAppSettings(BaseSettings):
     def database_url(self) -> str:
         """Вернуть DSN PostgreSQL для psycopg."""
 
-        return (
-            f"postgresql://{self.postgres_user}:{self.postgres_password}"
-            f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
-        )
+        return build_postgres_dsn(self)
+
+
+def build_postgres_dsn(settings: BaseAppSettings) -> str:
+    """Собрать DSN PostgreSQL из настроек окружения."""
+
+    return (
+        f"postgresql://{settings.postgres_user}:{settings.postgres_password}"
+        f"@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}"
+    )
+
+
+@lru_cache
+def get_settings() -> BaseAppSettings:
+    """Вернуть настройки приложения с кэшированием на время жизни процесса."""
+
+    return BaseAppSettings()

@@ -9,6 +9,13 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
+from control_common.constants import (
+    WORK_STATUS_ACTIVE,
+    WORK_STATUS_CANCELLED,
+    WORK_STATUS_EXPIRED,
+    WORK_STATUS_FINISHED,
+)
+
 
 class DetailType(models.Model):
     """Справочник типов деталей."""
@@ -61,10 +68,10 @@ class Work(models.Model):
     `status='active'`, система считает, что станок занят этим работником.
     """
 
-    STATUS_ACTIVE = "active"
-    STATUS_FINISHED = "finished"
-    STATUS_EXPIRED = "expired"
-    STATUS_CANCELLED = "cancelled"
+    STATUS_ACTIVE = WORK_STATUS_ACTIVE
+    STATUS_FINISHED = WORK_STATUS_FINISHED
+    STATUS_EXPIRED = WORK_STATUS_EXPIRED
+    STATUS_CANCELLED = WORK_STATUS_CANCELLED
 
     STATUS_CHOICES = [
         (STATUS_ACTIVE, "работает сейчас"),
@@ -90,7 +97,7 @@ class Work(models.Model):
             # В первой версии один станок не может иметь две активные смены сразу.
             models.UniqueConstraint(
                 fields=["machine"],
-                condition=Q(status="active"),
+                condition=Q(status=WORK_STATUS_ACTIVE),
                 name="unique_active_work_per_machine",
             ),
         ]
