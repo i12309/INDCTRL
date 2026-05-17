@@ -2,14 +2,15 @@
 
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import TYPE_CHECKING
 
-from psycopg import Connection
-from psycopg.rows import dict_row
-from psycopg_pool import ConnectionPool
+if TYPE_CHECKING:
+    from psycopg import Connection
+    from psycopg_pool import ConnectionPool
 
 from control_common.config import BaseAppSettings, get_settings
 
-_pool: ConnectionPool | None = None
+_pool: "ConnectionPool | None" = None
 
 
 def init_connection_pool(
@@ -18,7 +19,7 @@ def init_connection_pool(
     min_size: int = 1,
     max_size: int = 10,
     open_pool: bool = False,
-) -> ConnectionPool:
+) -> "ConnectionPool":
     """Инициализировать общий пул подключений к PostgreSQL.
 
     FastAPI-приложения вызывают эту функцию на старте процесса. По умолчанию пул
@@ -29,6 +30,9 @@ def init_connection_pool(
 
     if _pool is not None:
         return _pool
+
+    from psycopg.rows import dict_row
+    from psycopg_pool import ConnectionPool
 
     app_settings = settings or get_settings()
     _pool = ConnectionPool(
@@ -41,14 +45,14 @@ def init_connection_pool(
     return _pool
 
 
-def get_connection_pool() -> ConnectionPool:
+def get_connection_pool() -> "ConnectionPool":
     """Вернуть текущий пул подключений, создав его при первом обращении."""
 
     return init_connection_pool()
 
 
 @contextmanager
-def get_connection() -> Iterator[Connection]:
+def get_connection() -> Iterator["Connection"]:
     """Выдать PostgreSQL connection из общего пула.
 
     Контекстный менеджер сам возвращает connection в пул после блока `with`.

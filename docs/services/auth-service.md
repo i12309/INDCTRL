@@ -2,4 +2,10 @@
 
 Назначение: авторизация работников на ESP32, смены, heartbeat и logout.
 
-Первый этап реализует только `GET /health`.
+Основные endpoint'ы:
+
+- `GET /health`;
+- `POST /api/auth/device/workers`;
+- `POST /api/auth/login`;
+- `POST /api/auth/logout`;
+- `POST /api/auth/heartbeat`.
