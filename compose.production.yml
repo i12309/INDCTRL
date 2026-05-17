@@ -15,44 +15,10 @@ services:
       retries: 5
       start_period: 10s
 
-  auth-service:
+  indctrl:
     build:
       context: .
-      dockerfile: docker/auth-service.Dockerfile
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      APP_ENV: production
-    depends_on:
-      postgres:
-        condition: service_healthy
-    expose:
-      - "8000"
-    networks:
-      - indctrl
-
-  event-service:
-    build:
-      context: .
-      dockerfile: docker/event-service.Dockerfile
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      APP_ENV: production
-    depends_on:
-      postgres:
-        condition: service_healthy
-    expose:
-      - "8000"
-    networks:
-      - indctrl
-
-  control-web:
-    build:
-      context: .
-      dockerfile: docker/control-web.Dockerfile
+      dockerfile: docker/service.Dockerfile
     restart: unless-stopped
     env_file:
       - .env
@@ -73,9 +39,7 @@ services:
     image: nginx:1.27-alpine
     restart: unless-stopped
     depends_on:
-      - auth-service
-      - event-service
-      - control-web
+      - indctrl
     ports:
       - "80:80"
     volumes:

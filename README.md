@@ -1,53 +1,45 @@
 # INDCTRL
 
-INDCTRL - система контроля работы станков на одном Linux-сервере. Проект состоит из
-нескольких контейнеров, которые запускаются через Docker Compose и используют одну
-PostgreSQL-БД.
+INDCTRL - Django-only система контроля работы станков на одном Linux-сервере.
+Проект использует PostgreSQL, Nginx и Docker Compose.
 
-## Сервисы
+## Состав
 
-- `auth-service` - FastAPI-сервис авторизации работников на ESP32-терминалах,
-  создания смен, heartbeat и logout.
-- `event-service` - FastAPI-сервис приема событий о произведенных деталях от ESP32.
-- `control-web` - Django-сервис с административной панелью, dashboard, отчетами и
-  миграциями БД.
-- `postgres` - общая PostgreSQL-БД.
+- `indctrl` - web-интерфейс, Django admin, dashboard, отчеты, API для ESP32 и
+  миграции БД;
+- `postgres` - общая PostgreSQL-БД;
 - `nginx` - единая HTTP-точка входа.
 
-## Почему PostgreSQL
+Отдельных FastAPI-сервисов в рабочей архитектуре больше нет: API для ESP32
+реализован внутри Django.
 
-Проект сразу рассчитан на рабочую эксплуатацию, общую БД для нескольких сервисов и
-миграции через Django. SQLite для такой схемы не подходит: он ограничивает
-конкурентную запись, сложнее обслуживается в контейнерах и не отражает production-
-окружение.
+## API для ESP32
 
-## Почему Docker Compose
+- `POST /api/device/workers`
+- `POST /api/device/login`
+- `POST /api/device/heartbeat`
+- `POST /api/device/logout`
+- `POST /api/device/detail`
 
-Все компоненты должны запускаться на одном Linux-сервере предприятия. Docker Compose
-дает повторяемый запуск, изолированные контейнеры, общий internal network,
-healthcheck PostgreSQL и независимые образы сервисов без установки Python-зависимостей
-на хост.
-
-## Почему admin и отчеты в control-web
-
-Django уже содержит admin, ORM, формы, шаблоны и систему пользователей. Поэтому
-админка, dashboard и отчеты находятся в одном сервисе `control-web`, используют один
-набор моделей и один источник миграций. FastAPI-сервисы читают и пишут в ту же БД
-напрямую, но не запускают миграции.
+Подробные JSON-примеры находятся в [docs/esp32-api.md](docs/esp32-api.md).
 
 ## Первый запуск
 
 ```bash
 cp .env.example .env
 docker compose up -d --build
+docker compose exec indctrl python manage.py migrate
+docker compose exec indctrl python manage.py collectstatic --noinput
+docker compose exec indctrl python manage.py createsuperuser
 docker compose ps
 ```
 
 После старта:
 
-- `http://localhost/health-web/` - health Django `control-web` через Nginx;
-- `http://localhost/health-auth/` - health `auth-service` через Nginx;
-- `http://localhost/health-events/` - health `event-service` через Nginx.
+- `http://localhost/health-web/` - health Django через Nginx;
+- `http://localhost/admin/` - Django admin;
+- `http://localhost/dashboard/current-workers/` - текущие смены;
+- `http://localhost/reports/details/` - отчет по деталям.
 
 ## Команды Docker Compose
 
@@ -66,49 +58,35 @@ make format
 make backup
 ```
 
-Если `make` недоступен, используйте команды Docker Compose напрямую, например
-`docker compose up -d --build`.
+Если `make` недоступен, используйте команды Docker Compose напрямую.
 
 ## Документация
 
-Основные документы находятся в `docs/`:
-
-- `docs/architecture.md` - архитектура;
-- `docs/database.md` - БД и миграции;
-- `docs/docker.md` - контейнеры;
-- `docs/env.md` - переменные окружения;
-- `docs/esp32-api.md` - последовательность работы ESP32 и примеры JSON;
-- `docs/final-checklist.md` - финальный чеклист приемки;
-- `docs/services/` - документы сервисов;
-- `docs/linux/runbook.md` - общий runbook эксплуатации на Linux;
-- `docs/linux/` - дополнительные инструкции Linux;
-- `docs/backup/` - резервное копирование PostgreSQL.
+- [docs/architecture.md](docs/architecture.md) - Django-only архитектура;
+- [docs/database.md](docs/database.md) - БД и миграции;
+- [docs/docker.md](docs/docker.md) - Docker Compose;
+- [docs/env.md](docs/env.md) - переменные окружения;
+- [docs/esp32-api.md](docs/esp32-api.md) - API для ESP32;
+- [docs/service.md](docs/service.md) - Django-сервис;
+- [docs/linux/runbook.md](docs/linux/runbook.md) - runbook Linux-сервера;
+- [docs/backup/](docs/backup) - backup и restore PostgreSQL;
+- [docs/final-checklist.md](docs/final-checklist.md) - финальный чеклист.
 
 ## Логи
 
 ```bash
 docker compose logs -f
-docker compose logs -f auth-service
-docker compose logs -f event-service
-docker compose logs -f control-web
+docker compose logs -f indctrl
 docker compose logs -f nginx
+docker compose logs -f postgres
 ```
 
 ## Миграции
 
-Django является источником структуры БД:
+Django является единственным источником структуры БД:
 
 ```bash
 make migrate
 ```
 
-Миграции создают доменные таблицы INDCTRL и начальные справочники ролей и состояний
-деталей. Все изменения схемы БД должны проходить через `control-web`.
-
-## Администратор Django
-
-```bash
-make createsuperuser
-```
-
-Админка доступна по адресу `http://localhost/admin/`.
+Все изменения схемы БД должны проходить через Django-модели и миграции.

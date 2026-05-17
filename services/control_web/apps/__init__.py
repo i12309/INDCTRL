@@ -1,1 +1,0 @@
-"""Django-приложения control-web."""

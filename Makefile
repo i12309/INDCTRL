@@ -18,23 +18,23 @@ ps:
 	$(COMPOSE) ps
 
 migrate:
-	$(COMPOSE) exec control-web python manage.py migrate
+	$(COMPOSE) exec indctrl python manage.py migrate
 
 createsuperuser:
-	$(COMPOSE) exec control-web python manage.py createsuperuser
+	$(COMPOSE) exec indctrl python manage.py createsuperuser
 
 collectstatic:
-	$(COMPOSE) exec control-web python manage.py collectstatic --noinput
+	$(COMPOSE) exec indctrl python manage.py collectstatic --noinput
 
 test:
 	pytest
 
 lint:
-	python -m ruff check common services tests
+	python -m ruff check service tests
 
 format:
-	black common services tests
-	python -m ruff check --fix common services tests
+	black service tests
+	python -m ruff check --fix service tests
 
 backup:
 	bash deploy/scripts/backup_postgres.sh

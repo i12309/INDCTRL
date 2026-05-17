@@ -49,6 +49,13 @@ Django должен отвечать за:
 - лишние nginx upstream;
 - документацию про старую микросервисную архитектуру.
 
+для Api должны быть такие url 
+POST /api/device/workers
+POST /api/device/login
+POST /api/device/heartbeat
+POST /api/device/logout
+POST /api/device/detail
+
 ## Стиль реализации
 
 Код должен быть максимально простым и прямолинейным.

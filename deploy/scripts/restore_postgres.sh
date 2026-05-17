@@ -17,8 +17,8 @@ if [ "$#" -ne 1 ]; then
 fi
 
 BACKUP_FILE="$1"
-POSTGRES_DB="${POSTGRES_DB:-machine_control}"
-POSTGRES_USER="${POSTGRES_USER:-machine_control}"
+POSTGRES_DB="${POSTGRES_DB:-indctrl}"
+POSTGRES_USER="${POSTGRES_USER:-indctrl}"
 
 if [ ! -f "${BACKUP_FILE}" ]; then
   echo "Backup file not found: ${BACKUP_FILE}" >&2
@@ -27,7 +27,7 @@ fi
 
 echo "WARNING: restore will write data into PostgreSQL database '${POSTGRES_DB}'."
 echo "Stop application services before restore:"
-echo "  docker compose stop auth-service event-service control-web"
+echo "  docker compose stop indctrl"
 echo
 read -r -p "Type RESTORE to continue: " CONFIRMATION
 
@@ -51,4 +51,4 @@ fi
 
 echo "Restore finished"
 echo "Start application services:"
-echo "  docker compose up -d auth-service event-service control-web"
+echo "  docker compose up -d indctrl"

@@ -1,28 +1,19 @@
 # Docker
 
-INDCTRL запускается через Docker Compose на одном Linux-сервере. Снаружи публикуется
-только Nginx на порту `80`; прикладные сервисы и PostgreSQL доступны только во
-внутренней Docker-сети `indctrl`.
+INDCTRL запускается через Docker Compose на одном Linux-сервере. После перехода
+на Django-only в рабочей архитектуре осталось три контейнера:
 
-## Контейнеры
+- `indctrl` - web-интерфейс, admin, dashboard, отчеты, API для ESP32 и миграции;
+- `postgres` - PostgreSQL 17 с рабочими данными;
+- `nginx` - единая HTTP-точка входа на порт `80`.
 
-- `postgres` - PostgreSQL 17, хранит рабочие данные проекта.
-- `auth-service` - FastAPI-сервис авторизации ESP32.
-- `event-service` - FastAPI-сервис приема событий деталей.
-- `control-web` - Django admin, dashboard, отчеты и миграции БД.
-- `nginx` - единая HTTP-точка входа.
+PostgreSQL и Django не публикуются наружу напрямую. Внешние запросы принимает
+только Nginx.
 
 ## Volumes
 
-- `postgres_data` - постоянное хранилище `/var/lib/postgresql/data`; данные
-  сохраняются после перезапуска контейнеров.
-- `static_data` - собранные Django static files; Nginx отдает их по `/static/`.
-
-## Почему PostgreSQL не опубликован наружу
-
-PostgreSQL не имеет секции `ports`, поэтому порт `5432` не открыт на хосте. Это
-уменьшает поверхность атаки: к БД обращаются только контейнеры внутри сети
-`indctrl`.
+- `postgres_data` - постоянное хранилище `/var/lib/postgresql/data`;
+- `static_data` - собранные Django static files для отдачи через `/static/`.
 
 ## Первый запуск
 
@@ -30,9 +21,9 @@ PostgreSQL не имеет секции `ports`, поэтому порт `5432` 
 cp .env.example .env
 docker compose build
 docker compose up -d
-docker compose exec control-web python manage.py migrate
-docker compose exec control-web python manage.py collectstatic --noinput
-docker compose exec control-web python manage.py createsuperuser
+docker compose exec indctrl python manage.py migrate
+docker compose exec indctrl python manage.py collectstatic --noinput
+docker compose exec indctrl python manage.py createsuperuser
 ```
 
 Эквивалентно через `make`:
@@ -50,13 +41,11 @@ make createsuperuser
 ```bash
 docker compose -f compose.production.yml build
 docker compose -f compose.production.yml up -d
-docker compose -f compose.production.yml exec control-web python manage.py migrate
-docker compose -f compose.production.yml exec control-web python manage.py collectstatic --noinput
+docker compose -f compose.production.yml exec indctrl python manage.py migrate
+docker compose -f compose.production.yml exec indctrl python manage.py collectstatic --noinput
 ```
 
-Скрипт `deploy/scripts/deploy.sh` выполняет сборку, запуск, миграции и collectstatic
-в этом порядке. Миграции не встроены в бесконечный старт контейнера, чтобы ошибка
-миграции не превращалась в бесконечный restart-loop.
+Скрипт `deploy/scripts/deploy.sh` выполняет эти шаги автоматически.
 
 ## Остановка и пересборка
 
@@ -66,34 +55,37 @@ docker compose build
 docker compose up -d
 ```
 
-`docker compose down` не удаляет named volumes. Чтобы удалить данные PostgreSQL,
-нужно явно использовать `docker compose down -v`; для production это опасная
-операция.
+`docker compose down` не удаляет named volumes. Для удаления данных PostgreSQL
+нужно явно выполнить `docker compose down -v`; в production это опасная операция.
 
 ## Логи
 
 ```bash
 docker compose logs -f
-docker compose logs -f auth-service
-docker compose logs -f event-service
-docker compose logs -f control-web
+docker compose logs -f indctrl
 docker compose logs -f nginx
+docker compose logs -f postgres
 ```
 
-## Health через Nginx
+## Health
 
-- `GET /health-auth/` - проверка `auth-service`;
-- `GET /health-events/` - проверка `event-service`;
-- `GET /health-web/` - проверка `control-web`.
+- `GET /health-web/` - проверка Django через Nginx;
+- `GET /health/` - тот же endpoint внутри Django.
+
+Ожидаемый ответ:
+
+```json
+{"status": "ok", "service": "indctrl"}
+```
 
 ## Маршрутизация Nginx
 
-- `/api/auth/` -> `auth-service:8000/api/auth/`;
-- `/api/events/` -> `event-service:8000/api/events/`;
-- `/admin/` -> `control-web:8000/admin/`;
-- `/reports/` -> `control-web:8000/reports/`;
-- `/dashboard/` -> `control-web:8000/dashboard/`;
+- `/api/device/workers` -> Django API;
+- `/api/device/login` -> Django API;
+- `/api/device/heartbeat` -> Django API;
+- `/api/device/logout` -> Django API;
+- `/api/device/detail` -> Django API;
+- `/admin/` -> Django admin;
+- `/reports/` -> отчеты;
+- `/dashboard/` -> dashboard;
 - `/static/` -> volume `static_data`.
-
-Порт `443` и HTTPS будут добавлены отдельным этапом. Сейчас production-конфигурация
-готовит единую HTTP-точку входа на `80:80`.

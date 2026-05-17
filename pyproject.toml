@@ -5,7 +5,7 @@ target-version = ["py312"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-src = ["common", "services"]
+src = ["service"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -14,8 +14,5 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = [
-  "common",
-  "services/auth_service",
-  "services/event_service",
-  "services/control_web",
+  "service",
 ]

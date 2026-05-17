@@ -11,8 +11,8 @@ if [ -f ".env" ]; then
   set +a
 fi
 
-POSTGRES_DB="${POSTGRES_DB:-machine_control}"
-POSTGRES_USER="${POSTGRES_USER:-machine_control}"
+POSTGRES_DB="${POSTGRES_DB:-indctrl}"
+POSTGRES_USER="${POSTGRES_USER:-indctrl}"
 BACKUP_DIR="${BACKUP_DIR:-./backups/postgres}"
 BACKUP_RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-30}"
 TIMESTAMP="$(date +%Y-%m-%d_%H%M%S)"

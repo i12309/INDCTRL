@@ -16,7 +16,7 @@ bash deploy/scripts/backup_postgres.sh
 - создает каталог из `BACKUP_DIR`, по умолчанию `./backups/postgres`;
 - выполняет `pg_dump` внутри контейнера `postgres`;
 - сжимает результат через `gzip`;
-- создает файл вида `machine_control_2026-05-17_030000.sql.gz`;
+- создает файл вида `indctrl_2026-05-17_030000.sql.gz`;
 - удаляет backup-файлы старше `BACKUP_RETENTION_DAYS`.
 
 ## Настройки
