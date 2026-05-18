@@ -1,5 +1,6 @@
 # Generated manually for INDCTRL clean initial schema.
 
+import django.contrib.auth.validators
 from django.db import migrations, models
 
 USER_PERMISSIONS = [
@@ -65,7 +66,16 @@ class Migration(migrations.Migration):
                         verbose_name="superuser status",
                     ),
                 ),
-                ("username", models.CharField(max_length=150, unique=True, verbose_name="логин")),
+                (
+                    "username",
+                    models.CharField(
+                        help_text="Только латинские буквы, цифры и символы @/./+/-/_.",
+                        max_length=150,
+                        unique=True,
+                        validators=[django.contrib.auth.validators.ASCIIUsernameValidator()],
+                        verbose_name="логин",
+                    ),
+                ),
                 ("full_name", models.CharField(max_length=255, verbose_name="ФИО")),
                 ("is_active", models.BooleanField(default=True, verbose_name="активен")),
                 ("is_staff", models.BooleanField(default=False, verbose_name="доступ в admin")),

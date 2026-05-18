@@ -2,6 +2,7 @@
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.db import models
 
 
@@ -42,7 +43,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     его проверяет Django API через стандартный `check_password`.
     """
 
-    username = models.CharField("логин", max_length=150, unique=True)
+    username_validator = ASCIIUsernameValidator()
+
+    username = models.CharField(
+        "логин",
+        max_length=150,
+        unique=True,
+        validators=[username_validator],
+        help_text="Только латинские буквы, цифры и символы @/./+/-/_.",
+    )
     full_name = models.CharField("ФИО", max_length=255)
     is_active = models.BooleanField("активен", default=True)
     is_staff = models.BooleanField("доступ в admin", default=False)
