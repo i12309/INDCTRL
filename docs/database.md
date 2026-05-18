@@ -14,8 +14,8 @@
 
 ## Основные таблицы
 
-- `accounts_role` - роли `admin`, `director`, `manager`, `worker`.
 - `accounts_user` - пользователи и работники.
+- `auth_group` и `auth_permission` - группы и права доступа Django.
 - `machines_machine` - станки.
 - `machines_device` - ESP32-устройства с уникальным `mac_address`.
 - `schedules_usermachinepermission` - разрешения работников на станки.

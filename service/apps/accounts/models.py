@@ -1,34 +1,8 @@
-"""Модели сотрудников, ролей и учетных записей."""
+"""Модели сотрудников и учетных записей."""
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-
-
-class Role(models.Model):
-    """Роль пользователя в системе INDCTRL.
-
-    Роль хранится отдельной таблицей, чтобы API и web-интерфейс одинаково
-    проверяли права без привязки к внутренним Django-группам.
-    """
-
-    code = models.CharField("код", max_length=32, unique=True)
-    name = models.CharField("название", max_length=100)
-    is_active = models.BooleanField("активна", default=True)
-    created_at = models.DateTimeField("создана", auto_now_add=True)
-    updated_at = models.DateTimeField("обновлена", auto_now=True)
-
-    class Meta:
-        """Настройки отображения ролей в Django."""
-
-        ordering = ["code"]
-        verbose_name = "роль"
-        verbose_name_plural = "роли"
-
-    def __str__(self) -> str:
-        """Вернуть человекочитаемое название роли."""
-
-        return self.name
 
 
 class UserManager(BaseUserManager):
@@ -45,13 +19,12 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, username: str, password: str | None = None, **extra_fields):
-        """Создать администратора Django с ролью admin."""
+        """Создать администратора Django."""
 
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
         extra_fields.setdefault("full_name", username)
-        extra_fields.setdefault("role", Role.objects.get_or_create(code="admin", defaults={"name": "администратор"})[0])
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Суперпользователь должен иметь is_staff=True")
@@ -71,7 +44,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     username = models.CharField("логин", max_length=150, unique=True)
     full_name = models.CharField("ФИО", max_length=255)
-    role = models.ForeignKey(Role, verbose_name="роль", on_delete=models.PROTECT, related_name="users")
     is_active = models.BooleanField("активен", default=True)
     is_staff = models.BooleanField("доступ в admin", default=False)
     created_at = models.DateTimeField("создан", auto_now_add=True)
@@ -89,6 +61,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         swappable = "AUTH_USER_MODEL"
         verbose_name = "пользователь"
         verbose_name_plural = "пользователи"
+        permissions = [
+            ("view_reports", "Может просматривать dashboard и отчеты"),
+            ("use_esp32_api", "Может работать через ESP32 API"),
+        ]
 
     def __str__(self) -> str:
         """Вернуть ФИО или логин пользователя."""

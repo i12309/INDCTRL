@@ -86,6 +86,27 @@ def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
     assert "Справочники" not in base
 
 
+def test_access_uses_groups_and_permissions_instead_of_roles() -> None:
+    """Web и ESP32 API должны проверять Django permissions, а не Role."""
+
+    models = read("service/apps/accounts/models.py")
+    admin = read("service/apps/accounts/admin.py")
+    access = read("service/apps/access.py")
+    api_views = read("service/apps/api/views.py")
+
+    assert "class Role" not in models
+    assert "role =" not in models
+    assert "RoleAdmin" not in admin
+    assert "use_admin_panel" not in models
+    assert "view_reports" in models
+    assert "use_esp32_api" in models
+    assert "PERM_USE_ADMIN_PANEL" not in access
+    assert "has_perm(PERM_VIEW_REPORTS)" in access
+    assert "has_perm(PERM_USE_ESP32_API)" in api_views
+    assert "role__code" not in api_views
+    assert "user.role" not in api_views
+
+
 def test_django_admin_uses_jazzmin_without_cdn() -> None:
     """Django admin должен использовать готовую offline-тему Jazzmin."""
 

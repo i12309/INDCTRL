@@ -126,7 +126,6 @@ JAZZMIN_SETTINGS = {
     ],
     "icons": {
         "accounts.User": "fas fa-users",
-        "accounts.Role": "fas fa-user-tag",
         "machines.Machine": "fas fa-industry",
         "machines.Device": "fas fa-microchip",
         "schedules.UserMachinePermission": "fas fa-key",

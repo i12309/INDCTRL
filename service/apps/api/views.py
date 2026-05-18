@@ -13,7 +13,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from apps.accounts.models import User
-from apps.constants import ROLE_WORKER, SERVICE_INDCTRL, WORK_STATUS_ACTIVE, WORK_STATUS_FINISHED
+from apps.constants import (
+    PERM_USE_ESP32_API,
+    SERVICE_INDCTRL,
+    WORK_STATUS_ACTIVE,
+    WORK_STATUS_FINISHED,
+)
 from apps.machines.models import Device
 from apps.production.models import AuthSession, Detail, DetailState, DetailType, InvalidEvent, Work
 from apps.schedules.models import UserMachinePermission, UserMachineSchedule
@@ -122,6 +127,12 @@ def _get_active_device(mac_address: str) -> Device:
     return device
 
 
+def _user_can_use_esp32_api(user: User) -> bool:
+    """Проверить бизнес-право работника на работу через ESP32 API."""
+
+    return user.is_active and user.has_perm(PERM_USE_ESP32_API)
+
+
 def _user_can_work_now(user: User, machine_id: int, now: datetime) -> bool:
     """Проверить разрешение и активное расписание работника на станке."""
 
@@ -188,13 +199,12 @@ def device_workers(request: HttpRequest) -> JsonResponse:
         device = _get_active_device(str(_required(payload, "macAddress")))
         now = timezone.now()
         workers = []
-        for user in User.objects.select_related("role").filter(
+        for user in User.objects.prefetch_related("groups__permissions", "user_permissions").filter(
             is_active=True,
-            role__code=ROLE_WORKER,
             machine_permissions__machine=device.machine,
             machine_permissions__is_allowed=True,
         ).distinct():
-            if _user_can_work_now(user, device.machine_id, now):
+            if _user_can_use_esp32_api(user) and _user_can_work_now(user, device.machine_id, now):
                 workers.append({"userID": user.id, "fullName": user.full_name})
     except ApiError as exc:
         return error_response(exc.message)
@@ -220,8 +230,12 @@ def device_login(request: HttpRequest) -> JsonResponse:
         password = str(_required(payload, "password"))
         device = _get_active_device(str(_required(payload, "macAddress")))
 
-        user = User.objects.select_related("role").filter(id=user_id, is_active=True).first()
-        if user is None or user.role.code != ROLE_WORKER:
+        user = (
+            User.objects.prefetch_related("groups__permissions", "user_permissions")
+            .filter(id=user_id, is_active=True)
+            .first()
+        )
+        if user is None or not _user_can_use_esp32_api(user):
             raise ApiError("Пользователь не найден или не является работником")
         if not user.check_password(password):
             raise ApiError("Неверный пароль")

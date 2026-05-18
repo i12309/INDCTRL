@@ -3,37 +3,21 @@
 from collections.abc import Callable
 
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import ObjectDoesNotExist
 
-from apps.constants import ROLE_ADMIN, ROLE_DIRECTOR, ROLE_MANAGER
-
-REPORT_ROLES = {ROLE_ADMIN, ROLE_DIRECTOR, ROLE_MANAGER}
+from apps.constants import PERM_VIEW_REPORTS
 
 
 def can_view_admin(user) -> bool:
-    """Проверить доступ к Django admin и справочникам.
+    """Проверить базовый доступ к Django admin."""
 
-    Справочники открываются через стандартный Django admin, поэтому ссылка в
-    интерфейсе и серверная проверка admin должны использовать одно правило.
-    """
-
-    if not user.is_authenticated or not user.is_active or not user.is_staff:
-        return False
-    if user.is_superuser:
-        return True
-
-    try:
-        role = getattr(user, "role", None)
-    except ObjectDoesNotExist:
-        return False
-    return role is not None and role.code == ROLE_ADMIN
+    return user.is_authenticated and user.is_active and user.is_staff
 
 
 def can_view_reports(user) -> bool:
     """Проверить доступ к dashboard и отчетам.
 
     Работники не должны видеть отчеты и текущую занятость станков. Эти страницы
-    предназначены для управленческих ролей: admin, director и manager.
+    предназначены только для пользователей с конкретным правом отчетов.
     """
 
     if not user.is_authenticated or not user.is_active:
@@ -41,12 +25,7 @@ def can_view_reports(user) -> bool:
     if user.is_superuser:
         return True
 
-    try:
-        role = getattr(user, "role", None)
-    except ObjectDoesNotExist:
-        return False
-
-    return role is not None and role.code in REPORT_ROLES
+    return user.has_perm(PERM_VIEW_REPORTS)
 
 
 def ui_access(request) -> dict:
@@ -62,6 +41,6 @@ def ui_access(request) -> dict:
 
 
 def report_access_required(view_func: Callable):
-    """Ограничить view ролями, которым разрешены отчеты."""
+    """Ограничить view пользователями, которым разрешены отчеты."""
 
     return login_required(user_passes_test(can_view_reports)(view_func))

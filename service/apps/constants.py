@@ -3,10 +3,8 @@
 SERVICE_INDCTRL = "indctrl"
 DEFAULT_HEALTH_STATUS = "ok"
 
-ROLE_ADMIN = "admin"
-ROLE_DIRECTOR = "director"
-ROLE_MANAGER = "manager"
-ROLE_WORKER = "worker"
+PERM_VIEW_REPORTS = "accounts.view_reports"
+PERM_USE_ESP32_API = "accounts.use_esp32_api"
 
 WORK_STATUS_ACTIVE = "active"
 WORK_STATUS_FINISHED = "finished"

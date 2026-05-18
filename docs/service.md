@@ -6,7 +6,7 @@ ESP32 и миграции.
 
 ## Web URL
 
-- `/login/` - панель авторизации с выбором роли;
+- `/login/` - панель авторизации;
 - `/admin/` - Django admin;
 - `/dashboard/` - главная страница единого интерфейса;
 - `/dashboard/current-workers/` - активные смены и состояние heartbeat;
@@ -29,17 +29,17 @@ Bootstrap лежит локально в `service/static/vendor/bootstrap/`; web
 
 API реализован обычными Django JSON views в `apps.api`.
 
-## Роли
+## Группы и права
 
 ```text
-admin      доступ к /admin/, dashboard и reports
-director   доступ к dashboard и reports
-manager    доступ к dashboard и reports
-worker     вход в систему без управленческих разделов
+accounts.view_reports      dashboard и reports
+accounts.use_esp32_api     работа через ESP32 API
 ```
 
-Для `/admin/` дополнительно нужен `is_staff=true`. Django superuser имеет полный
-доступ.
+Для `/admin/` нужен стандартный флаг `is_staff=true`. Разделы и действия внутри
+admin определяются стандартными правами моделей `view/add/change/delete`. Django
+superuser имеет полный доступ. Группы используются как контейнеры прав, поэтому
+API и отчеты проверяют `user.has_perm(...)`, а не название группы.
 
 ## Миграции и static files
 
