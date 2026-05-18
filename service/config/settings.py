@@ -92,6 +92,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = Path(os.getenv("DJANGO_STATIC_ROOT", "/app/staticfiles"))
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
@@ -136,7 +137,6 @@ JAZZMIN_SETTINGS = {
         "production.DetailType": "fas fa-tags",
         "production.DetailState": "fas fa-check-circle",
         "production.InvalidEvent": "fas fa-exclamation-triangle",
-        "auth.Group": "fas fa-users-cog",
     },
     "default_icon_parents": "fas fa-folder",
     "default_icon_children": "fas fa-circle",
