@@ -110,6 +110,23 @@ def _schedule_allows_now(schedule: UserMachineSchedule, now: datetime) -> bool:
     )
 
 
+def _schedule_interval(schedule: UserMachineSchedule, now: datetime) -> tuple[datetime, datetime]:
+    """Вернуть границы текущего локального интервала расписания."""
+
+    current_tz = timezone.get_current_timezone()
+    local_now = timezone.localtime(now, current_tz)
+    interval_date = local_now.date()
+    interval_start = timezone.make_aware(
+        datetime.combine(interval_date, schedule.time_from),
+        current_tz,
+    )
+    interval_end = timezone.make_aware(
+        datetime.combine(interval_date, schedule.time_to),
+        current_tz,
+    )
+    return interval_start, interval_end
+
+
 def _get_active_device(mac_address: str) -> Device:
     """Найти активное ESP32-устройство и его станок по MAC-адресу."""
 
@@ -136,19 +153,45 @@ def _user_can_use_esp32_api(user: User) -> bool:
 def _user_can_work_now(user: User, machine_id: int, now: datetime) -> bool:
     """Проверить разрешение и активное расписание работника на станке."""
 
+    return bool(_current_work_intervals(user, machine_id, now))
+
+
+def _current_work_intervals(user: User, machine_id: int, now: datetime) -> list[tuple[datetime, datetime]]:
+    """Вернуть интервалы расписания, в которые работник может работать сейчас."""
+
     if not UserMachinePermission.objects.filter(
         user=user,
         machine_id=machine_id,
         is_allowed=True,
     ).exists():
-        return False
+        return []
 
     schedules = UserMachineSchedule.objects.filter(
         user=user,
         machine_id=machine_id,
         is_active=True,
     )
-    return any(_schedule_allows_now(schedule, now) for schedule in schedules)
+    return [
+        _schedule_interval(schedule, now)
+        for schedule in schedules
+        if _schedule_allows_now(schedule, now)
+    ]
+
+
+def _work_started_in_current_interval(
+    work: Work,
+    intervals: list[tuple[datetime, datetime]],
+) -> bool:
+    """Проверить, относится ли активная смена к текущему интервалу графика."""
+
+    started_at = timezone.localtime(work.started_at)
+    return any(interval_start <= started_at <= interval_end for interval_start, interval_end in intervals)
+
+
+def _deactivate_work_sessions(work: Work) -> None:
+    """Отключить старые активные авторизационные сессии смены."""
+
+    AuthSession.objects.filter(work=work, is_active=True).update(is_active=False)
 
 
 def _get_active_session(session_id: UUID) -> AuthSession:
@@ -239,23 +282,47 @@ def device_login(request: HttpRequest) -> JsonResponse:
             raise ApiError("Пользователь не найден или не является работником")
         if not user.check_password(password):
             raise ApiError("Неверный пароль")
-        if not _user_can_work_now(user, device.machine_id, timezone.now()):
-            raise ApiError("Нет разрешения или активного расписания на этот станок")
 
         now = timezone.now()
+        work_intervals = _current_work_intervals(user, device.machine_id, now)
+        if not work_intervals:
+            raise ApiError("Нет разрешения или активного расписания на этот станок")
+
         expires_at = now + timedelta(minutes=getattr(settings, "SESSION_TTL_MINUTES", 720))
         try:
             with transaction.atomic():
-                if Work.objects.filter(machine=device.machine, status=WORK_STATUS_ACTIVE).exists():
-                    raise ApiError("Станок уже занят активной сменой")
-                work = Work.objects.create(
-                    user=user,
-                    machine=device.machine,
-                    device=device,
-                    started_at=now,
-                    last_seen_at=now,
-                    status=WORK_STATUS_ACTIVE,
+                active_work = (
+                    Work.objects.select_for_update()
+                    .filter(machine=device.machine, status=WORK_STATUS_ACTIVE)
+                    .first()
                 )
+                if active_work is not None and active_work.user_id != user.id:
+                    raise ApiError("Станок уже занят активной сменой другого работника")
+
+                if active_work is not None and _work_started_in_current_interval(
+                    active_work,
+                    work_intervals,
+                ):
+                    work = active_work
+                    work.last_seen_at = now
+                    work.device = device
+                    work.save(update_fields=["last_seen_at", "device", "updated_at"])
+                    _deactivate_work_sessions(work)
+                else:
+                    if active_work is not None:
+                        _deactivate_work_sessions(active_work)
+                        active_work.status = Work.STATUS_EXPIRED
+                        active_work.finished_at = now
+                        active_work.save(update_fields=["status", "finished_at", "updated_at"])
+                    work = Work.objects.create(
+                        user=user,
+                        machine=device.machine,
+                        device=device,
+                        started_at=now,
+                        last_seen_at=now,
+                        status=WORK_STATUS_ACTIVE,
+                    )
+
                 session = AuthSession.objects.create(
                     user=user,
                     machine=device.machine,

@@ -62,6 +62,22 @@ def test_esp32_api_uses_new_urls() -> None:
     assert "/api/events" not in docs
 
 
+def test_esp32_login_reuses_work_by_schedule_interval() -> None:
+    """Повторный login ESP32 должен управлять Work и AuthSession по интервалу графика."""
+
+    api_views = read("service/apps/api/views.py")
+
+    assert "def _current_work_intervals" in api_views
+    assert "def _work_started_in_current_interval" in api_views
+    assert "def _deactivate_work_sessions" in api_views
+    assert "select_for_update()" in api_views
+    assert "active_work.user_id != user.id" in api_views
+    assert "_deactivate_work_sessions(work)" in api_views
+    assert "active_work.status = Work.STATUS_EXPIRED" in api_views
+    assert "Work.objects.create(" in api_views
+    assert "expires_at__gt" in api_views
+
+
 def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
     """Единый web-интерфейс должен иметь вход, sidebar и локальный Bootstrap."""
 
