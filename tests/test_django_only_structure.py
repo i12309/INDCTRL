@@ -80,8 +80,10 @@ def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
         ROOT / "service" / "static" / "vendor" / "bootstrap" / "bootstrap.bundle.min.js"
     ).is_file()
     assert "form.role" not in login
-    for label in ("Админка", "Справочники", "Отчеты"):
-        assert label in base
+    assert "Панель администратора" in base
+    assert "Отчеты" in base
+    assert "Админка" not in base
+    assert "Справочники" not in base
 
 
 def test_django_admin_uses_jazzmin_without_cdn() -> None:

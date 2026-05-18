@@ -119,18 +119,7 @@
         <a class="nav-link {% if request.path == '/' or request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard:index' %}">Главная</a>
 
         {% if ui.can_admin %}
-          <div class="nav-section">Админка</div>
           <a class="nav-link" href="{% url 'admin:index' %}">Панель администратора</a>
-
-          <div class="nav-section">Справочники</div>
-          <a class="nav-link" href="{% url 'admin:accounts_user_changelist' %}">Пользователи</a>
-          <a class="nav-link" href="{% url 'admin:accounts_role_changelist' %}">Роли</a>
-          <a class="nav-link" href="{% url 'admin:machines_machine_changelist' %}">Станки</a>
-          <a class="nav-link" href="{% url 'admin:machines_device_changelist' %}">ESP32-устройства</a>
-          <a class="nav-link" href="{% url 'admin:schedules_usermachinepermission_changelist' %}">Разрешения</a>
-          <a class="nav-link" href="{% url 'admin:schedules_usermachineschedule_changelist' %}">Расписания</a>
-          <a class="nav-link" href="{% url 'admin:production_detailtype_changelist' %}">Типы деталей</a>
-          <a class="nav-link" href="{% url 'admin:production_detailstate_changelist' %}">Состояния деталей</a>
         {% endif %}
 
         {% if ui.can_reports %}
