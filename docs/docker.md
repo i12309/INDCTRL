@@ -15,6 +15,9 @@ PostgreSQL и Django не публикуются наружу напрямую. 
 - `postgres_data` - постоянное хранилище `/var/lib/postgresql/data`;
 - `static_data` - собранные Django static files для отдачи через `/static/`.
 
+В `static_data` попадают локальный Bootstrap, static-файлы Django admin и тема
+`django-jazzmin`. CDN для web-интерфейса и admin не используется.
+
 ## Первый запуск
 
 ```bash

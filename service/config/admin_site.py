@@ -14,6 +14,6 @@ def configure_admin_site() -> None:
         return can_view_admin(request.user)
 
     admin.site.has_permission = site_has_permission
-    admin.site.site_header = "INDCTRL admin"
+    admin.site.site_header = "INDCTRL"
     admin.site.site_title = "INDCTRL admin"
-    admin.site.index_title = "Управление INDCTRL"
+    admin.site.index_title = "Администрирование INDCTRL"

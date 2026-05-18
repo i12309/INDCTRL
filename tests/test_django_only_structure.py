@@ -84,6 +84,22 @@ def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
         assert label in base
 
 
+def test_django_admin_uses_jazzmin_without_cdn() -> None:
+    """Django admin должен использовать готовую offline-тему Jazzmin."""
+
+    settings = read("service/config/settings.py")
+    requirements = read("service/requirements.txt")
+
+    assert "django-jazzmin" in requirements
+    assert '"jazzmin",' in settings
+    assert settings.index('"jazzmin",') < settings.index('"django.contrib.admin",')
+    assert "JAZZMIN_SETTINGS" in settings
+    assert "JAZZMIN_UI_TWEAKS" in settings
+    assert "INDCTRL" in settings
+    assert "cdn.jsdelivr.net" not in settings
+    assert "https://cdn" not in settings
+
+
 def test_reports_include_invalid_events_page() -> None:
     """Некорректные события должны быть доступны как защищенный отчет."""
 

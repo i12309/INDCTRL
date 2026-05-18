@@ -27,6 +27,7 @@ ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost")
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -99,3 +100,65 @@ SESSION_TTL_MINUTES = int(os.getenv("SESSION_TTL_MINUTES", "720"))
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+
+JAZZMIN_SETTINGS = {
+    "site_title": "INDCTRL admin",
+    "site_header": "INDCTRL",
+    "site_brand": "INDCTRL",
+    "welcome_sign": "Администрирование INDCTRL",
+    "copyright": "INDCTRL",
+    "search_model": [
+        "accounts.User",
+        "machines.Machine",
+        "machines.Device",
+        "production.Detail",
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": [
+        "accounts",
+        "machines",
+        "schedules",
+        "production",
+        "auth",
+    ],
+    "icons": {
+        "accounts.User": "fas fa-users",
+        "accounts.Role": "fas fa-user-tag",
+        "machines.Machine": "fas fa-industry",
+        "machines.Device": "fas fa-microchip",
+        "schedules.UserMachinePermission": "fas fa-key",
+        "schedules.UserMachineSchedule": "fas fa-calendar-alt",
+        "production.Work": "fas fa-user-clock",
+        "production.AuthSession": "fas fa-id-badge",
+        "production.Detail": "fas fa-cogs",
+        "production.DetailType": "fas fa-tags",
+        "production.DetailState": "fas fa-check-circle",
+        "production.InvalidEvent": "fas fa-exclamation-triangle",
+        "auth.Group": "fas fa-users-cog",
+    },
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "default",
+    "default_theme_mode": "light",
+    "navbar": "navbar-white navbar-light",
+    "sidebar": "sidebar-light-primary",
+    "brand_colour": "navbar-primary",
+    "accent": "accent-primary",
+    "no_navbar_border": True,
+    "sidebar_nav_child_indent": True,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}

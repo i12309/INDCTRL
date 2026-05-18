@@ -37,6 +37,8 @@ docker compose exec indctrl python manage.py collectstatic --noinput
 
 Bootstrap хранится локально в `static/vendor/bootstrap/`, поэтому интерфейс не
 требует доступа в интернет после установки.
+Django admin использует тему `django-jazzmin`; ее static-файлы поставляются через
+Python-пакет и собираются обычной командой `collectstatic`.
 
 ## Диагностика
 

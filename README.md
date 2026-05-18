@@ -44,6 +44,8 @@ docker compose ps
 
 Web-интерфейс не требует интернета после установки: Bootstrap хранится в
 `service/static/vendor/bootstrap/` и отдается как обычная Django static.
+Оформление Django admin подключено через `django-jazzmin`; его static-файлы
+собираются вместе с остальными файлами командой `collectstatic`.
 
 ## Команды Docker Compose
 
