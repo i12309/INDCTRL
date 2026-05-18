@@ -18,6 +18,10 @@ from apps.machines.models import Device
 from apps.production.models import AuthSession, Detail, DetailState, DetailType, InvalidEvent, Work
 from apps.schedules.models import UserMachinePermission, UserMachineSchedule
 
+# ESP32 не работает как браузер и не хранит Django CSRF cookie, поэтому device API
+# освобожден от CSRF. Защита операций строится на пароле работника при login и на
+# `sessionID`, который сервер сверяет с активной сменой.
+
 
 class ApiError(Exception):
     """Прикладная ошибка API с текстом для ESP32 и журналов."""

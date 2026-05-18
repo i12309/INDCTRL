@@ -35,6 +35,9 @@ docker compose exec indctrl python manage.py collectstatic --noinput
 - `/reports/details/export/xlsx/`
 - `/health/`
 
+Bootstrap хранится локально в `static/vendor/bootstrap/`, поэтому интерфейс не
+требует доступа в интернет после установки.
+
 ## Диагностика
 
 ```bash

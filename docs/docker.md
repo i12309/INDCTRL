@@ -36,16 +36,41 @@ make collectstatic
 make createsuperuser
 ```
 
-## Production-запуск
+## Production-запуск без интернета
+
+`compose.production.yml` не собирает образы на сервере предприятия. Он использует
+заранее подготовленные образы с фиксированными именами:
+
+- `indctrl/indctrl:0.1.0`;
+- `postgres:17-alpine`;
+- `nginx:1.27-alpine`.
+
+На машине с интернетом подготовьте образ приложения и архивы:
 
 ```bash
-docker compose -f compose.production.yml build
+docker build -f docker/service.Dockerfile -t indctrl/indctrl:0.1.0 .
+docker pull postgres:17-alpine
+docker pull nginx:1.27-alpine
+docker save -o indctrl-images.tar indctrl/indctrl:0.1.0 postgres:17-alpine nginx:1.27-alpine
+```
+
+Перенесите `indctrl-images.tar` и исходный каталог проекта на сервер предприятия,
+затем загрузите образы:
+
+```bash
+docker load -i indctrl-images.tar
+```
+
+Запуск на production-сервере:
+
+```bash
 docker compose -f compose.production.yml up -d
 docker compose -f compose.production.yml exec indctrl python manage.py migrate
 docker compose -f compose.production.yml exec indctrl python manage.py collectstatic --noinput
 ```
 
-Скрипт `deploy/scripts/deploy.sh` выполняет эти шаги автоматически.
+Скрипт `deploy/scripts/deploy.sh` выполняет запуск, миграции и collectstatic без
+сборки образов.
 
 ## Остановка и пересборка
 

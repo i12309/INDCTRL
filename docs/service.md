@@ -16,6 +16,9 @@ ESP32 и миграции.
 - `/reports/invalid-events/` - некорректные события API;
 - `/health/` и `/health-web/` - health endpoint.
 
+Bootstrap лежит локально в `service/static/vendor/bootstrap/`; web-интерфейс не
+обращается к CDN и работает в сети без интернета.
+
 ## API для ESP32
 
 - `POST /api/device/workers`

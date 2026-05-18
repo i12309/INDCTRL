@@ -1,6 +1,6 @@
 COMPOSE=docker compose
 
-.PHONY: build up down logs ps migrate createsuperuser collectstatic test lint format backup
+.PHONY: build up down logs ps migrate createsuperuser collectstatic backup
 
 build:
 	$(COMPOSE) build
@@ -25,16 +25,6 @@ createsuperuser:
 
 collectstatic:
 	$(COMPOSE) exec indctrl python manage.py collectstatic --noinput
-
-test:
-	pytest
-
-lint:
-	python -m ruff check service tests
-
-format:
-	black service tests
-	python -m ruff check --fix service tests
 
 backup:
 	bash deploy/scripts/backup_postgres.sh

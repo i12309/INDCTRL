@@ -5,6 +5,8 @@
 
 ## Первый запуск
 
+Для локальной разработки можно использовать сборку на месте:
+
 ```bash
 cd /opt/INDCTRL
 cp .env.example .env
@@ -14,6 +16,16 @@ docker compose exec indctrl python manage.py migrate
 docker compose exec indctrl python manage.py collectstatic --noinput
 docker compose exec indctrl python manage.py createsuperuser
 curl http://127.0.0.1/health-web/
+```
+
+Для production без интернета сначала загрузите заранее подготовленные Docker-образы,
+затем запускайте `compose.production.yml`:
+
+```bash
+docker load -i indctrl-images.tar
+docker compose -f compose.production.yml up -d
+docker compose -f compose.production.yml exec indctrl python manage.py migrate
+docker compose -f compose.production.yml exec indctrl python manage.py collectstatic --noinput
 ```
 
 ## Остановка
@@ -32,6 +44,8 @@ docker compose restart nginx
 
 ## Обновление
 
+Локальная разработка:
+
 ```bash
 git pull
 docker compose build
@@ -41,7 +55,17 @@ docker compose exec indctrl python manage.py collectstatic --noinput
 docker compose ps
 ```
 
-Перед обновлением сделайте backup PostgreSQL.
+Production:
+
+```bash
+docker load -i indctrl-images.tar
+docker compose -f compose.production.yml up -d
+docker compose -f compose.production.yml exec indctrl python manage.py migrate
+docker compose -f compose.production.yml exec indctrl python manage.py collectstatic --noinput
+```
+
+Перед обновлением сделайте backup PostgreSQL. На production-сервере сборка образов
+не выполняется.
 
 ## Миграции
 

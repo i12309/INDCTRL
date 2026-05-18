@@ -37,9 +37,13 @@ docker compose ps
 После старта:
 
 - `http://localhost/health-web/` - health Django через Nginx;
+- `http://localhost/login/` - вход в web-интерфейс;
 - `http://localhost/admin/` - Django admin;
 - `http://localhost/dashboard/current-workers/` - текущие смены;
 - `http://localhost/reports/details/` - отчет по деталям.
+
+Web-интерфейс не требует интернета после установки: Bootstrap хранится в
+`service/static/vendor/bootstrap/` и отдается как обычная Django static.
 
 ## Команды Docker Compose
 
@@ -52,9 +56,6 @@ make ps
 make migrate
 make createsuperuser
 make collectstatic
-make test
-make lint
-make format
 make backup
 ```
 

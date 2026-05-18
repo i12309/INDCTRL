@@ -63,15 +63,23 @@ def test_esp32_api_uses_new_urls() -> None:
 
 
 def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
-    """Единый web-интерфейс должен иметь вход, sidebar и Bootstrap."""
+    """Единый web-интерфейс должен иметь вход, sidebar и локальный Bootstrap."""
 
     urls = read("service/config/urls.py")
     base = read("service/templates/base.html")
     login = read("service/templates/registration/login.html")
 
-    assert 'path("login/", RoleLoginView.as_view(), name="login")' in urls
-    assert "bootstrap@5.3.8" in base
-    assert "bootstrap@5.3.8" in login
+    assert 'path("login/", IndctrlLoginView.as_view(), name="login")' in urls
+    assert "vendor/bootstrap/bootstrap.min.css" in base
+    assert "vendor/bootstrap/bootstrap.bundle.min.js" in base
+    assert "vendor/bootstrap/bootstrap.min.css" in login
+    assert "cdn.jsdelivr.net" not in base
+    assert "cdn.jsdelivr.net" not in login
+    assert (ROOT / "service" / "static" / "vendor" / "bootstrap" / "bootstrap.min.css").is_file()
+    assert (
+        ROOT / "service" / "static" / "vendor" / "bootstrap" / "bootstrap.bundle.min.js"
+    ).is_file()
+    assert "form.role" not in login
     for label in ("Админка", "Справочники", "Отчеты"):
         assert label in base
 
@@ -84,3 +92,25 @@ def test_reports_include_invalid_events_page() -> None:
 
     assert 'path("invalid-events/", views.invalid_events, name="invalid_events")' in report_urls
     assert "@report_access_required\ndef invalid_events" in report_views
+
+
+def test_production_compose_uses_prebuilt_image() -> None:
+    """Production compose должен запускать готовые образы без сборки."""
+
+    production_compose = read("compose.production.yml")
+
+    assert "image: indctrl/indctrl:0.1.0" in production_compose
+    assert "build:" not in production_compose
+    assert "latest" not in production_compose
+
+
+def test_env_and_makefile_are_operational_minimum() -> None:
+    """Env и Makefile не должны содержать лишние dev-настройки."""
+
+    env_example = read(".env.example")
+    makefile = read("Makefile")
+
+    assert "DJANGO_PORT" not in env_example
+    assert "\ntest:" not in makefile
+    assert "\nlint:" not in makefile
+    assert "\nformat:" not in makefile
