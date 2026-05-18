@@ -22,8 +22,7 @@
 - `auth_group` и `auth_permission` - группы и права доступа Django.
 - `machines_machine` - станки.
 - `machines_device` - ESP32-устройства с уникальным `mac_address`.
-- `schedules_usermachinepermission` - разрешения работников на станки.
-- `schedules_usermachineschedule` - расписания работников.
+- `schedules_usermachineschedule` - расписания работников и источник допуска к станкам.
 - `production_work` - рабочие смены.
 - `production_authsession` - UUID-сессии ESP32.
 - `production_detailtype` - типы деталей.
@@ -38,7 +37,7 @@
 - `device_mac_address_idx` ускоряет поиск ESP32 по MAC-адресу.
 - Индексы `detail_event_time_idx`, `detail_user_event_time_idx`,
   `detail_machine_event_time_idx`, `detail_work_idx` ускоряют отчеты.
-- `schedule_weekday_between_1_and_7` и `schedule_time_from_lt_time_to`
+- `schedule_weekday_null_or_between_1_and_7` и `schedule_time_empty_or_from_lt_to`
   защищают расписания от некорректных значений.
 
 ## Миграции

@@ -2,17 +2,7 @@
 
 from django.contrib import admin
 
-from apps.schedules.models import UserMachinePermission, UserMachineSchedule
-
-
-@admin.register(UserMachinePermission)
-class UserMachinePermissionAdmin(admin.ModelAdmin):
-    """Админка базовых разрешений пользователя на станок."""
-
-    list_display = ("user", "machine", "is_allowed", "created_at", "updated_at")
-    list_filter = ("is_allowed", "machine")
-    search_fields = ("user__username", "user__full_name", "machine__name")
-    readonly_fields = ("created_at", "updated_at")
+from apps.schedules.models import UserMachineSchedule
 
 
 @admin.register(UserMachineSchedule)

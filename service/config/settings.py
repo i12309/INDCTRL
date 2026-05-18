@@ -129,7 +129,6 @@ JAZZMIN_SETTINGS = {
         "accounts.User": "fas fa-users",
         "machines.Machine": "fas fa-industry",
         "machines.Device": "fas fa-microchip",
-        "schedules.UserMachinePermission": "fas fa-key",
         "schedules.UserMachineSchedule": "fas fa-calendar-alt",
         "production.Work": "fas fa-user-clock",
         "production.AuthSession": "fas fa-id-badge",

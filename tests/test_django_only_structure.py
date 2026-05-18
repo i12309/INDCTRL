@@ -78,6 +78,48 @@ def test_esp32_login_reuses_work_by_schedule_interval() -> None:
     assert "expires_at__gt" in api_views
 
 
+def test_machine_access_comes_only_from_schedules() -> None:
+    """Допуск к станку должен определяться строками графика, без отдельной модели разрешений."""
+
+    schedule_models = read("service/apps/schedules/models.py")
+    schedule_admin = read("service/apps/schedules/admin.py")
+    schedule_migration = read("service/apps/schedules/migrations/0001_initial.py")
+    api_views = read("service/apps/api/views.py")
+    database_docs = read("docs/database.md")
+
+    for content in (schedule_models, schedule_admin, schedule_migration, api_views, database_docs):
+        assert "UserMachinePermission" not in content
+        assert "schedules_usermachinepermission" not in content
+
+    assert "machine_schedules__machine=device.machine" in api_views
+    assert "machine_schedules__is_active=True" in api_views
+    assert "machine_permissions__" not in api_views
+    assert "user_permissions" not in schedule_migration
+
+
+def test_machine_schedule_supports_open_day_and_time_variants() -> None:
+    """График должен поддерживать ограничения по дню, времени, обоим полям или без них."""
+
+    schedule_models = read("service/apps/schedules/models.py")
+    schedule_migration = read("service/apps/schedules/migrations/0001_initial.py")
+    api_views = read("service/apps/api/views.py")
+
+    for content in (schedule_models, schedule_migration):
+        assert '"weekday"' in content
+        assert "models.PositiveSmallIntegerField(" in content
+        assert "blank=True" in content
+        assert "null=True" in content
+        assert "schedule_weekday_null_or_between_1_and_7" in content
+        assert "schedule_time_empty_or_from_lt_to" in content
+        assert "time_from__isnull=True, time_to__isnull=True" in content
+        assert "time_from__isnull=False, time_to__isnull=False" in content
+
+    assert "schedule.weekday is None or schedule.weekday == local_now.isoweekday()" in api_views
+    assert "schedule.time_from is None" in api_views
+    assert "datetime.min.time()" in api_views
+    assert "for schedule in schedules" in api_views
+
+
 def test_web_interface_has_login_sidebar_and_bootstrap() -> None:
     """Единый web-интерфейс должен иметь вход, sidebar и локальный Bootstrap."""
 

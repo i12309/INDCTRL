@@ -21,7 +21,7 @@ from apps.constants import (
 )
 from apps.machines.models import Device
 from apps.production.models import AuthSession, Detail, DetailState, DetailType, InvalidEvent, Work
-from apps.schedules.models import UserMachinePermission, UserMachineSchedule
+from apps.schedules.models import UserMachineSchedule
 
 # ESP32 не работает как браузер и не хранит Django CSRF cookie, поэтому device API
 # освобожден от CSRF. Защита операций строится на пароле работника при login и на
@@ -104,10 +104,13 @@ def _schedule_allows_now(schedule: UserMachineSchedule, now: datetime) -> bool:
     """Проверить расписание по текущему серверному времени."""
 
     local_now = timezone.localtime(now)
-    return (
-        schedule.weekday == local_now.isoweekday()
-        and schedule.time_from <= local_now.time() <= schedule.time_to
+    weekday_allowed = schedule.weekday is None or schedule.weekday == local_now.isoweekday()
+    time_allowed = (
+        schedule.time_from is None
+        or schedule.time_to is None
+        or schedule.time_from <= local_now.time() <= schedule.time_to
     )
+    return weekday_allowed and time_allowed
 
 
 def _schedule_interval(schedule: UserMachineSchedule, now: datetime) -> tuple[datetime, datetime]:
@@ -115,15 +118,20 @@ def _schedule_interval(schedule: UserMachineSchedule, now: datetime) -> tuple[da
 
     current_tz = timezone.get_current_timezone()
     local_now = timezone.localtime(now, current_tz)
+    if schedule.weekday is None and schedule.time_from is None:
+        return (
+            datetime.min.replace(tzinfo=current_tz),
+            datetime.max.replace(tzinfo=current_tz),
+        )
+
     interval_date = local_now.date()
-    interval_start = timezone.make_aware(
-        datetime.combine(interval_date, schedule.time_from),
-        current_tz,
-    )
-    interval_end = timezone.make_aware(
-        datetime.combine(interval_date, schedule.time_to),
-        current_tz,
-    )
+    if schedule.time_from is None:
+        interval_start = timezone.make_aware(datetime.combine(interval_date, datetime.min.time()), current_tz)
+        interval_end = timezone.make_aware(datetime.combine(interval_date, datetime.max.time()), current_tz)
+        return interval_start, interval_end
+
+    interval_start = timezone.make_aware(datetime.combine(interval_date, schedule.time_from), current_tz)
+    interval_end = timezone.make_aware(datetime.combine(interval_date, schedule.time_to), current_tz)
     return interval_start, interval_end
 
 
@@ -158,13 +166,6 @@ def _user_can_work_now(user: User, machine_id: int, now: datetime) -> bool:
 
 def _current_work_intervals(user: User, machine_id: int, now: datetime) -> list[tuple[datetime, datetime]]:
     """Вернуть интервалы расписания, в которые работник может работать сейчас."""
-
-    if not UserMachinePermission.objects.filter(
-        user=user,
-        machine_id=machine_id,
-        is_allowed=True,
-    ).exists():
-        return []
 
     schedules = UserMachineSchedule.objects.filter(
         user=user,
@@ -244,8 +245,8 @@ def device_workers(request: HttpRequest) -> JsonResponse:
         workers = []
         for user in User.objects.prefetch_related("groups__permissions", "user_permissions").filter(
             is_active=True,
-            machine_permissions__machine=device.machine,
-            machine_permissions__is_allowed=True,
+            machine_schedules__machine=device.machine,
+            machine_schedules__is_active=True,
         ).distinct():
             if _user_can_use_esp32_api(user) and _user_can_work_now(user, device.machine_id, now):
                 workers.append({"userID": user.id, "fullName": user.full_name})
