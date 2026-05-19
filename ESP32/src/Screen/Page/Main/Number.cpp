@@ -2,6 +2,7 @@
 
 #include "Data.h"
 #include "Screen/Page/Main/Info.h"
+#include "Screen/Page/Main/List.h"
 #include "Screen/Page/Main/Process.h"
 #include "Screen/Panel/LvglHelpers.h"
 #include "Service/DeviceApi.h"
@@ -67,7 +68,11 @@ void Number::popBackspace(lv_event_t* e) {
 
 void Number::popCancel(lv_event_t* e) {
     (void)e;
-    instance().back();
+    if (instance().mode_ == Mode::CloseShift) {
+        Process::instance().show();
+        return;
+    }
+    List::instance().show();
 }
 
 void Number::popOk(lv_event_t* e) {

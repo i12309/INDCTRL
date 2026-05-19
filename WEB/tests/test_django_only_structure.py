@@ -92,10 +92,15 @@ def test_esp32_close_shift_logs_out_current_session_without_relogin() -> None:
     api_views = read("service/apps/api/views.py")
 
     close_shift_body = number_cpp[number_cpp.index("void Number::submitCloseShift") :]
+    cancel_body = number_cpp[number_cpp.index("void Number::popCancel") : number_cpp.index("void Number::popOk")]
     logout_body = api_views[api_views.index("def device_logout") :]
 
     assert "DeviceApi::login" not in close_shift_body
     assert "DeviceApi::logout(Data::runtime.sessionId, password)" in close_shift_body
+    assert "mode_ == Mode::CloseShift" in cancel_body
+    assert "Process::instance().show()" in cancel_body
+    assert "List::instance().show()" in cancel_body
+    assert "instance().back()" not in cancel_body
     assert 'request["password"] = password;' in device_api_cpp
     assert 'payload.get("password")' in logout_body
     assert "session.user.check_password" in logout_body
