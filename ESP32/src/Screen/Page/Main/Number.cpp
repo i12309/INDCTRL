@@ -73,6 +73,11 @@ void Number::submit() {
     LoginResult result = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
     if (!result.success) {
         Ui::setText(objects.kbd_text, "");
+        if (result.error.indexOf("занят") >= 0) {
+            Info::showRestart("Ошибка входа", result.error.c_str());
+            return;
+        }
+
         Info::showInfo("Ошибка входа", result.error.c_str());
         return;
     }
