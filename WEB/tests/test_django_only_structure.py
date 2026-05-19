@@ -202,6 +202,20 @@ def test_xlsx_export_is_bounded_and_streams_queryset_rows() -> None:
     assert ".iterator(chunk_size=EXPORT_QUERY_CHUNK_SIZE)" in report_services
 
 
+def test_detail_report_filters_work_by_id_input() -> None:
+    """Work filter should avoid rendering a large select with every shift."""
+
+    report_forms = read("service/apps/reports/forms.py")
+    report_services = read("service/apps/reports/services.py")
+
+    assert "from apps.production.models import DetailType, Work" not in report_forms
+    assert "work = forms.IntegerField(" in report_forms
+    assert 'label="ID смены"' in report_forms
+    assert "forms.ModelChoiceField" in report_forms
+    assert "queryset=Work.objects" not in report_forms
+    assert 'queryset.filter(work_id=filters["work"])' in report_services
+
+
 def test_gunicorn_uses_multiple_workers_and_threads() -> None:
     """Gunicorn should have process/thread concurrency so exports do not monopolize API handling."""
 

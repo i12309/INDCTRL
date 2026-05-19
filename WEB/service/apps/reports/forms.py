@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 
 from apps.machines.models import Machine
-from apps.production.models import DetailType, Work
+from apps.production.models import DetailType
 
 
 class DetailReportFilterForm(forms.Form):
@@ -30,10 +30,11 @@ class DetailReportFilterForm(forms.Form):
         queryset=get_user_model().objects.all().order_by("full_name"),
         required=False,
     )
-    work = forms.ModelChoiceField(
-        label="Смена",
-        queryset=Work.objects.all().select_related("user", "machine").order_by("-started_at"),
+    work = forms.IntegerField(
+        label="ID смены",
+        min_value=1,
         required=False,
+        widget=forms.NumberInput(attrs={"placeholder": "Например, 123"}),
     )
     detail_type = forms.ModelChoiceField(
         label="Тип детали",

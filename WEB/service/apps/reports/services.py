@@ -59,7 +59,7 @@ def build_detail_queryset(filters: dict) -> QuerySet:
     if filters.get("user"):
         queryset = queryset.filter(user=filters["user"])
     if filters.get("work"):
-        queryset = queryset.filter(work=filters["work"])
+        queryset = queryset.filter(work_id=filters["work"])
     if filters.get("detail_type"):
         queryset = queryset.filter(detail_type=filters["detail_type"])
     if filters.get("quality_min") is not None:
