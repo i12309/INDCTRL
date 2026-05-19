@@ -1,6 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[indCTRL_v1.eez-project]:/userPages/3",
+    "selectedUserPageObject": "[indCTRL_v1.eez-project]:/userPages/2",
     "subnavigationSelectedItems": {}
   },
   "layoutModel": {
@@ -77,7 +77,7 @@
           },
           {
             "type": "border",
-            "selected": 3,
+            "selected": 0,
             "size": 122.09375,
             "location": "bottom",
             "children": [
@@ -203,10 +203,10 @@
                 {
                   "type": "tab",
                   "id": "#736136e7-7345-484a-bb3c-9793f444b073",
-                  "name": "Number",
+                  "name": "List",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[indCTRL_v1.eez-project]:/userPages/3",
+                    "objectPath": "[indCTRL_v1.eez-project]:/userPages/2",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -2126,12 +2126,14 @@
             "0": {
               "0": {},
               "1": {},
-              "2": {
-                "$selected": true
-              }
+              "2": {}
             },
             "1": {
-              "0": {},
+              "0": {
+                "0": {
+                  "$selected": true
+                }
+              },
               "1": {},
               "2": {},
               "3": {},
@@ -2161,17 +2163,33 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "1": {},
+          "1": {
+            "0": {
+              "$selected": true
+            }
+          },
           "2": {
             "0": {
-              "0": {},
-              "1": {},
-              "2": {},
+              "0": {
+                "0": {},
+                "1": {},
+                "2": {}
+              },
+              "1": {
+                "0": {},
+                "1": {},
+                "2": {}
+              },
+              "2": {
+                "0": {},
+                "1": {},
+                "2": {}
+              },
               "3": {
                 "0": {},
-                "2": {
-                  "$selected": true
-                }
+                "1": {},
+                "2": {},
+                "3": {}
               }
             }
           }
@@ -2212,8 +2230,7 @@
   "lvglPart": "MAIN",
   "lvglState": "DEFAULT",
   "lvglExpandedPropertiesGroup": [
-    "TEXT",
-    "BACKGROUND"
+    "TEXT"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,

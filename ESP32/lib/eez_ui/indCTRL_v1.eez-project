@@ -1687,7 +1687,7 @@
                       "left": 0,
                       "top": 0,
                       "width": 100,
-                      "height": 200,
+                      "height": 16,
                       "customInputs": [],
                       "customOutputs": [],
                       "style": {
@@ -1702,7 +1702,7 @@
                       "leftUnit": "px",
                       "topUnit": "px",
                       "widthUnit": "%",
-                      "heightUnit": "px",
+                      "heightUnit": "%",
                       "children": [
                         {
                           "objID": "f2b002a2-5ef3-4a13-f6f7-08f6cb021649",
@@ -1836,7 +1836,7 @@
                       "left": 0,
                       "top": 0,
                       "width": 100,
-                      "height": 200,
+                      "height": 16,
                       "customInputs": [],
                       "customOutputs": [],
                       "style": {
@@ -1851,7 +1851,7 @@
                       "leftUnit": "px",
                       "topUnit": "px",
                       "widthUnit": "%",
-                      "heightUnit": "px",
+                      "heightUnit": "%",
                       "children": [
                         {
                           "objID": "99195e98-23a5-403b-e7f5-0c1e6cec9a02",
@@ -1985,7 +1985,7 @@
                       "left": 0,
                       "top": 0,
                       "width": 100,
-                      "height": 200,
+                      "height": 16,
                       "customInputs": [],
                       "customOutputs": [],
                       "style": {
@@ -2000,7 +2000,7 @@
                       "leftUnit": "px",
                       "topUnit": "px",
                       "widthUnit": "%",
-                      "heightUnit": "px",
+                      "heightUnit": "%",
                       "children": [
                         {
                           "objID": "aeb62ee3-7c78-4608-9a1f-21deceddd099",
@@ -2134,7 +2134,7 @@
                       "left": 0,
                       "top": 0,
                       "width": 100,
-                      "height": 200,
+                      "height": 16,
                       "customInputs": [],
                       "customOutputs": [],
                       "style": {
@@ -2149,7 +2149,7 @@
                       "leftUnit": "px",
                       "topUnit": "px",
                       "widthUnit": "%",
-                      "heightUnit": "px",
+                      "heightUnit": "%",
                       "children": [
                         {
                           "objID": "ad4371d4-7921-4da4-ba66-4274dba710ca",
@@ -2284,7 +2284,7 @@
                       "left": 0,
                       "top": 0,
                       "width": 100,
-                      "height": 200,
+                      "height": 16,
                       "customInputs": [],
                       "customOutputs": [],
                       "style": {
@@ -2299,7 +2299,7 @@
                       "leftUnit": "px",
                       "topUnit": "px",
                       "widthUnit": "%",
-                      "heightUnit": "px",
+                      "heightUnit": "%",
                       "children": [
                         {
                           "objID": "c5b89dbb-e422-47f9-cc00-0404d44abb2a",
@@ -2434,7 +2434,7 @@
                       "left": 0,
                       "top": 0,
                       "width": 100,
-                      "height": 200,
+                      "height": 16,
                       "customInputs": [],
                       "customOutputs": [],
                       "style": {
@@ -2449,7 +2449,7 @@
                       "leftUnit": "px",
                       "topUnit": "px",
                       "widthUnit": "%",
-                      "heightUnit": "px",
+                      "heightUnit": "%",
                       "children": [
                         {
                           "objID": "62f7b9d9-2d6f-4fb7-c367-00958fa8a95f",
