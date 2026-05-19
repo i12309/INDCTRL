@@ -16,7 +16,7 @@ protected:
 
 private:
     List();
-    void loadWorkers();
+    bool loadWorkers();
     void render();
 
     static void popBack(lv_event_t* e);

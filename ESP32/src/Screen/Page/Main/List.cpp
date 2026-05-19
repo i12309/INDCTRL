@@ -45,11 +45,11 @@ void List::onPrepare() {
 
 void List::onShow() {
     offset_ = 0;
-    loadWorkers();
+    if (!loadWorkers()) return;
     render();
 }
 
-void List::loadWorkers() {
+bool List::loadWorkers() {
     ApiResult result = DeviceApi::loadWorkers(
         Data::runtime.deviceMac,
         Data::runtime.machineId,
@@ -58,8 +58,22 @@ void List::loadWorkers() {
     );
     if (!result.success) {
         Data::runtime.workers.clear();
+        const bool isMacError = result.error.indexOf("MAC") >= 0 || result.error.indexOf("mac") >= 0;
+        if (isMacError) {
+            Info::showRestart("Ошибка загрузки", result.error.c_str(), Data::runtime.deviceMac.c_str());
+            return false;
+        }
+
         Info::showInfo("Ошибка загрузки", result.error.c_str());
+        return false;
     }
+
+    if (Data::runtime.workers.empty()) {
+        Info::showRestart("Список пуст", "Сотрудники не найдены");
+        return false;
+    }
+
+    return true;
 }
 
 void List::render() {

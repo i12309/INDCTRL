@@ -12,4 +12,6 @@ protected:
 
 private:
     uint32_t startedAtMs_ = 0;
+    bool wifiChecked_ = false;
+    bool wifiFailed_ = false;
 };

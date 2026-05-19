@@ -23,6 +23,7 @@ bool ApiClient::postJson(const char* path, JsonDocument& request, JsonDocument& 
 
     HTTPClient http;
     const String url = baseUrl_ + path;
+    Log::info("HTTP POST %s", url.c_str());
     if (!http.begin(url)) {
         Log::error("HTTP begin failed: %s", url.c_str());
         return false;
@@ -30,11 +31,12 @@ bool ApiClient::postJson(const char* path, JsonDocument& request, JsonDocument& 
 
     http.addHeader("Content-Type", "application/json");
     const int status = http.POST(body);
+    const String httpError = status <= 0 ? http.errorToString(status) : String();
     const String payload = http.getString();
     http.end();
 
     if (status <= 0) {
-        Log::error("HTTP POST failed: %d", status);
+        Log::error("HTTP POST failed: %d %s", status, httpError.c_str());
         return false;
     }
 

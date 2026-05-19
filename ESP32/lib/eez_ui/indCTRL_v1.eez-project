@@ -2921,7 +2921,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -2979,9 +2979,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3013,8 +3011,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3027,7 +3029,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3085,9 +3087,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3119,8 +3119,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3133,7 +3137,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3191,9 +3195,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3225,8 +3227,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3253,7 +3259,8 @@
                             "DEFAULT": {
                               "layout": "FLEX",
                               "flex_flow": "ROW",
-                              "pad_column": 2
+                              "pad_column": 2,
+                              "flex_grow": 1
                             }
                           }
                         }
@@ -3290,7 +3297,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3348,9 +3355,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3382,8 +3387,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3396,7 +3405,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3454,9 +3463,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3488,8 +3495,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3502,7 +3513,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3560,9 +3571,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3594,8 +3603,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3622,7 +3635,8 @@
                             "DEFAULT": {
                               "layout": "FLEX",
                               "flex_flow": "ROW",
-                              "pad_column": 1
+                              "pad_column": 1,
+                              "flex_grow": 1
                             }
                           }
                         }
@@ -3659,7 +3673,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3717,9 +3731,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3751,8 +3763,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3765,7 +3781,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3823,9 +3839,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3857,8 +3871,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3871,7 +3889,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 25,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -3929,9 +3947,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -3963,8 +3979,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -3991,7 +4011,8 @@
                             "DEFAULT": {
                               "layout": "FLEX",
                               "flex_flow": "ROW",
-                              "pad_column": 1
+                              "pad_column": 1,
+                              "flex_grow": 1
                             }
                           }
                         }
@@ -4028,7 +4049,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 19,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -4086,9 +4107,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -4120,8 +4139,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#A63B24",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -4134,7 +4157,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 19,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -4192,9 +4215,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -4226,8 +4247,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#626262",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -4240,7 +4265,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 19,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -4298,9 +4323,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -4332,8 +4355,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#4226D0",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -4346,7 +4373,7 @@
                           "type": "LVGLButtonWidget",
                           "left": 0,
                           "top": 0,
-                          "width": 19,
+                          "width": 22,
                           "height": 100,
                           "customInputs": [],
                           "customOutputs": [],
@@ -4404,9 +4431,7 @@
                                 "definition": {
                                   "MAIN": {
                                     "DEFAULT": {
-                                      "align": "CENTER",
-                                      "text_color": "#ffffff",
-                                      "text_font": "M_35"
+                                      "align": "CENTER"
                                     }
                                   }
                                 }
@@ -4438,8 +4463,12 @@
                                 "DEFAULT": {
                                   "border_width": 1,
                                   "border_color": "#ffffff",
-                                  "bg_color": "#3E424E",
-                                  "radius": 4
+                                  "radius": 4,
+                                  "bg_color": "#f6f6f6",
+                                  "text_color": "#1F782E",
+                                  "text_font": "M_35",
+                                  "bg_grad_dir": "VER",
+                                  "bg_grad_color": "#CCCCCC"
                                 }
                               }
                             }
@@ -4466,7 +4495,8 @@
                             "DEFAULT": {
                               "layout": "FLEX",
                               "flex_flow": "ROW",
-                              "pad_column": 1
+                              "pad_column": 1,
+                              "flex_grow": 1
                             }
                           }
                         }
