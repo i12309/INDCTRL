@@ -57,6 +57,7 @@ void Wait::onShow() {
 }
 
 WaitGuard::WaitGuard(const char* title) {
+    if (title == nullptr || title[0] == '\0') return;
     if (!Panel::isInitialized()) return;
     if (Page::activePage() == nullptr || Page::activePage() == &Load::instance()) return;
 

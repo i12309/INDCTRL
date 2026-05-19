@@ -463,6 +463,9 @@ def device_details(request: HttpRequest) -> JsonResponse:
     try:
         payload = _request_json(request)
         session = _get_active_session(_session_uuid(_required(payload, "sessionID")))
+        now = timezone.now()
+        session.work.last_seen_at = now
+        session.work.save(update_fields=["last_seen_at", "updated_at"])
         details = [
             {
                 "number": detail.detail_number,

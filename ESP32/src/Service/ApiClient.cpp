@@ -1,5 +1,6 @@
 #include "ApiClient.h"
 
+#include <cstring>
 #include <HTTPClient.h>
 
 #include "Screen/Page/Main/Wait.h"
@@ -37,7 +38,8 @@ bool ApiClient::postJson(const char* path, JsonDocument& request, JsonDocument& 
     String body;
     serializeJson(request, body);
 
-    Screen::WaitGuard wait(waitTitle);
+    const bool showWait = waitTitle != nullptr && strcmp(path, "/api/device/heartbeat") != 0;
+    Screen::WaitGuard wait(showWait ? waitTitle : nullptr);
 
     HTTPClient http;
     const String url = baseUrl_ + path;

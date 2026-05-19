@@ -216,6 +216,16 @@ def test_detail_report_filters_work_by_id_input() -> None:
     assert 'queryset.filter(work_id=filters["work"])' in report_services
 
 
+def test_details_api_refreshes_connection_status() -> None:
+    """Details request from ESP32 is also a sign that the active device is online."""
+
+    api_views = read("service/apps/api/views.py")
+    details_body = api_views[api_views.index("def device_details") :]
+
+    assert "session.work.last_seen_at = now" in details_body
+    assert 'session.work.save(update_fields=["last_seen_at", "updated_at"])' in details_body
+
+
 def test_gunicorn_uses_multiple_workers_and_threads() -> None:
     """Gunicorn should have process/thread concurrency so exports do not monopolize API handling."""
 

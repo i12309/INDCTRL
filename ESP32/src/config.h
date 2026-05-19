@@ -11,6 +11,7 @@ inline constexpr const char* WIFI_PASSWORD = "!24865Pzekyxl!";
 inline constexpr uint8_t WIFI_CONNECT_ATTEMPTS = 3;
 inline constexpr uint32_t WIFI_CONNECT_TIMEOUT_MS = 10000;
 inline constexpr uint32_t HTTP_REQUEST_TIMEOUT_MS = 7000;
+inline constexpr uint32_t HEARTBEAT_INTERVAL_MS = 60000;
 inline constexpr uint32_t UI_TICK_DELAY_MS = 5;
 inline constexpr uint32_t BOOT_SCREEN_MS = 800;
 }
