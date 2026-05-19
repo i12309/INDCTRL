@@ -191,6 +191,30 @@ def test_reports_include_invalid_events_page() -> None:
     assert "@report_access_required\ndef invalid_events" in report_views
 
 
+def test_xlsx_export_is_bounded_and_streams_queryset_rows() -> None:
+    """XLSX export must not load the whole report queryset/workbook into memory."""
+
+    report_services = read("service/apps/reports/services.py")
+
+    assert "EXPORT_LIMIT = 50_000" in report_services
+    assert "EXPORT_QUERY_CHUNK_SIZE = 1000" in report_services
+    assert "Workbook(write_only=True)" in report_services
+    assert ".iterator(chunk_size=EXPORT_QUERY_CHUNK_SIZE)" in report_services
+
+
+def test_gunicorn_uses_multiple_workers_and_threads() -> None:
+    """Gunicorn should have process/thread concurrency so exports do not monopolize API handling."""
+
+    dockerfile = read("docker/service.Dockerfile")
+    env_example = read(".env.example")
+
+    assert "--workers ${GUNICORN_WORKERS:-3}" in dockerfile
+    assert "--threads ${GUNICORN_THREADS:-2}" in dockerfile
+    assert "--timeout ${GUNICORN_TIMEOUT:-60}" in dockerfile
+    assert "GUNICORN_WORKERS=3" in env_example
+    assert "GUNICORN_THREADS=2" in env_example
+
+
 def test_production_compose_uses_prebuilt_image() -> None:
     """Production compose должен запускать готовые образы без сборки."""
 

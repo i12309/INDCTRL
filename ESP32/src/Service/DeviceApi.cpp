@@ -6,9 +6,30 @@
 
 ApiResult DeviceApi::resultFromResponse(bool httpOk, JsonDocument& response) {
     ApiResult result;
-    result.timedOut = Service::api().lastError() == ApiClient::Error::Timeout;
+    const ApiClient::Error error = Service::api().lastError();
+    result.timedOut = error == ApiClient::Error::Timeout;
+    if (!httpOk && error != ApiClient::Error::None) {
+        switch (error) {
+            case ApiClient::Error::Timeout:
+                result.error = "Сервер не ответил";
+                break;
+            case ApiClient::Error::BeginFailed:
+            case ApiClient::Error::RequestFailed:
+                result.error = "Сервер недоступен";
+                break;
+            case ApiClient::Error::JsonParse:
+                result.error = "Некорректный ответ сервера";
+                break;
+            case ApiClient::Error::InvalidPath:
+                result.error = "Некорректный запрос";
+                break;
+            case ApiClient::Error::None:
+                break;
+        }
+        return result;
+    }
+
     result.success = httpOk && response["success"].as<bool>();
-    if (result.timedOut) return result;
 
     if (!result.success) {
         const char* error = response["error"] | "Ошибка API";

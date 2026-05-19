@@ -10,7 +10,8 @@ from openpyxl import Workbook
 
 from apps.production.models import Detail
 
-EXPORT_LIMIT = 100_000
+EXPORT_LIMIT = 50_000
+EXPORT_QUERY_CHUNK_SIZE = 1000
 
 
 @dataclass(frozen=True)
@@ -100,7 +101,7 @@ def ensure_export_limit(queryset: QuerySet) -> None:
 def detail_export_rows(queryset: QuerySet):
     """Вернуть строки отчета для CSV/XLSX."""
 
-    for detail in queryset.order_by("event_time", "id"):
+    for detail in queryset.order_by("event_time", "id").iterator(chunk_size=EXPORT_QUERY_CHUNK_SIZE):
         yield [
             detail.event_time.strftime("%Y-%m-%d %H:%M:%S"),
             str(detail.user),
@@ -116,12 +117,11 @@ def build_xlsx_response(queryset: QuerySet, totals: DetailReportTotals) -> HttpR
     """Сформировать XLSX-файл отчета.
 
     Excel экспорт нужен менеджерам для дальнейшей ручной обработки. В первой версии
-    файл создается целиком в памяти и ограничен `EXPORT_LIMIT` строками.
+    файл пишется построчно и ограничен `EXPORT_LIMIT` строками.
     """
 
-    workbook = Workbook()
-    sheet = workbook.active
-    sheet.title = "Details"
+    workbook = Workbook(write_only=True)
+    sheet = workbook.create_sheet(title="Details")
     headers = [
         "Время события",
         "Работник",
