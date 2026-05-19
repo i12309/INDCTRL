@@ -294,11 +294,12 @@ def device_login(request: HttpRequest) -> JsonResponse:
             with transaction.atomic():
                 active_work = (
                     Work.objects.select_for_update()
+                    .select_related("user")
                     .filter(machine=device.machine, status=WORK_STATUS_ACTIVE)
                     .first()
                 )
                 if active_work is not None and active_work.user_id != user.id:
-                    raise ApiError("Станок уже занят активной сменой другого работника")
+                    raise ApiError(f"Станок занят: {active_work.user.full_name}")
 
                 if active_work is not None and _work_started_in_current_interval(
                     active_work,
