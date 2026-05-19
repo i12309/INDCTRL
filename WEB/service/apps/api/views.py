@@ -386,6 +386,9 @@ def device_logout(request: HttpRequest) -> JsonResponse:
     try:
         payload = _request_json(request)
         session = _get_active_session(_session_uuid(_required(payload, "sessionID")))
+        password = payload.get("password")
+        if password not in (None, "") and not session.user.check_password(str(password)):
+            raise ApiError("Неверный пароль")
         now = timezone.now()
         with transaction.atomic():
             session.is_active = False

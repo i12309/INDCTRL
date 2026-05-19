@@ -26,7 +26,7 @@ class DeviceApi {
 public:
     static ApiResult loadWorkers(const String& macAddress, int& machineId, String& machineName, std::vector<WorkerData>& workers);
     static LoginResult login(int userId, const String& password, const String& macAddress);
-    static ApiResult logout(const String& sessionId);
+    static ApiResult logout(const String& sessionId, const String& password = String());
     static ApiResult heartbeat(const String& sessionId);
     static ApiResult loadDetails(const String& sessionId, std::vector<DetailData>& details);
 

@@ -11,6 +11,12 @@ def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def read_repo(path: str) -> str:
+    """Read a text file from the repository root."""
+
+    return (ROOT.parent / path).read_text(encoding="utf-8")
+
+
 def test_compose_contains_only_indctrl_postgres_nginx() -> None:
     """В Docker Compose не должно быть отдельных auth/event сервисов."""
 
@@ -76,6 +82,23 @@ def test_esp32_login_reuses_work_by_schedule_interval() -> None:
     assert "active_work.status = Work.STATUS_EXPIRED" in api_views
     assert "Work.objects.create(" in api_views
     assert "expires_at__gt" in api_views
+
+
+def test_esp32_close_shift_logs_out_current_session_without_relogin() -> None:
+    """ESP32 shift close must not create a fresh session before logout."""
+
+    number_cpp = read_repo("ESP32/src/Screen/Page/Main/Number.cpp")
+    device_api_cpp = read_repo("ESP32/src/Service/DeviceApi.cpp")
+    api_views = read("service/apps/api/views.py")
+
+    close_shift_body = number_cpp[number_cpp.index("void Number::submitCloseShift") :]
+    logout_body = api_views[api_views.index("def device_logout") :]
+
+    assert "DeviceApi::login" not in close_shift_body
+    assert "DeviceApi::logout(Data::runtime.sessionId, password)" in close_shift_body
+    assert 'request["password"] = password;' in device_api_cpp
+    assert 'payload.get("password")' in logout_body
+    assert "session.user.check_password" in logout_body
 
 
 def test_machine_access_comes_only_from_schedules() -> None:

@@ -91,10 +91,13 @@ LoginResult DeviceApi::login(int userId, const String& password, const String& m
     return result;
 }
 
-ApiResult DeviceApi::logout(const String& sessionId) {
+ApiResult DeviceApi::logout(const String& sessionId, const String& password) {
     JsonDocument request;
     JsonDocument response;
     request["sessionID"] = sessionId;
+    if (password.length() > 0) {
+        request["password"] = password;
+    }
     return resultFromResponse(
         Service::api().postJson("/api/device/logout", request, response, "Завершение смены"),
         response

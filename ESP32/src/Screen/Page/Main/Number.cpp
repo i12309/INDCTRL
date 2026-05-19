@@ -112,21 +112,7 @@ void Number::submitLogin(const String& password) {
 }
 
 void Number::submitCloseShift(const String& password) {
-    LoginResult login = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
-    if (!login.success) {
-        if (login.timedOut) return;
-
-        Ui::setText(objects.kbd_text, "");
-        back();
-        return;
-    }
-
-    Data::runtime.sessionId = login.sessionId;
-    Data::runtime.userId = login.userId;
-    Data::runtime.machineId = login.machineId;
-    Data::runtime.workId = login.workId;
-
-    ApiResult logout = DeviceApi::logout(Data::runtime.sessionId);
+    ApiResult logout = DeviceApi::logout(Data::runtime.sessionId, password);
     if (!logout.success) {
         if (logout.timedOut) return;
 
