@@ -1,0 +1,107 @@
+#include "List.h"
+
+#include <cstdint>
+
+#include "Data.h"
+#include "Screen/Page/Main/Info.h"
+#include "Screen/Page/Main/Number.h"
+#include "Screen/Panel/LvglHelpers.h"
+#include "Service/DeviceApi.h"
+
+#include <ui/screens.h>
+
+namespace Screen {
+
+namespace {
+constexpr size_t PAGE_SIZE = 6;
+
+lv_obj_t* itemAt(size_t index) {
+    lv_obj_t* items[] = {
+        objects.list_item_1,
+        objects.list_item_2,
+        objects.list_item_3,
+        objects.list_item_4,
+        objects.list_item_5,
+        objects.list_item_6,
+    };
+    return index < PAGE_SIZE ? items[index] : nullptr;
+}
+}  // namespace
+
+List::List() : Page(SCREEN_ID_LIST) {}
+
+List& List::instance() {
+    static List page;
+    return page;
+}
+
+void List::onPrepare() {
+    Ui::onPop(objects.list_back, List::popBack);
+    Ui::onPop(objects.list_next, List::popNext);
+    for (size_t i = 0; i < PAGE_SIZE; ++i) {
+        Ui::onPop(itemAt(i), List::popItem, reinterpret_cast<void*>(i));
+    }
+}
+
+void List::onShow() {
+    offset_ = 0;
+    loadWorkers();
+    render();
+}
+
+void List::loadWorkers() {
+    ApiResult result = DeviceApi::loadWorkers(
+        Data::runtime.deviceMac,
+        Data::runtime.machineId,
+        Data::runtime.machineName,
+        Data::runtime.workers
+    );
+    if (!result.success) {
+        Data::runtime.workers.clear();
+        Info::showInfo("Ошибка загрузки", result.error.c_str());
+    }
+}
+
+void List::render() {
+    const size_t total = Data::runtime.workers.size();
+    Ui::setHidden(objects.list_back, offset_ == 0);
+    Ui::setHidden(objects.list_next, offset_ + PAGE_SIZE >= total);
+
+    for (size_t i = 0; i < PAGE_SIZE; ++i) {
+        lv_obj_t* item = itemAt(i);
+        const size_t workerIndex = offset_ + i;
+        const bool visible = workerIndex < total;
+        Ui::setHidden(item, !visible);
+        Ui::setText(item, visible ? Data::runtime.workers[workerIndex].fullName : "");
+    }
+}
+
+void List::popBack(lv_event_t* e) {
+    (void)e;
+    List& page = instance();
+    if (page.offset_ >= PAGE_SIZE) page.offset_ -= PAGE_SIZE;
+    page.render();
+}
+
+void List::popNext(lv_event_t* e) {
+    (void)e;
+    List& page = instance();
+    if (page.offset_ + PAGE_SIZE < Data::runtime.workers.size()) {
+        page.offset_ += PAGE_SIZE;
+        page.render();
+    }
+}
+
+void List::popItem(lv_event_t* e) {
+    List& page = instance();
+    const size_t row = reinterpret_cast<uintptr_t>(lv_event_get_user_data(e));
+    const size_t workerIndex = page.offset_ + row;
+    if (workerIndex >= Data::runtime.workers.size()) return;
+
+    const WorkerData& worker = Data::runtime.workers[workerIndex];
+    Data::runtime.userId = worker.userId;
+    Data::runtime.workerName = worker.fullName;
+    Number::instance().show();
+}
+
+}  // namespace Screen
