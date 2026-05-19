@@ -39,28 +39,6 @@ class DetailType(models.Model):
         return self.name
 
 
-class DetailState(models.Model):
-    """Справочник состояний деталей."""
-
-    code = models.CharField("код", max_length=32, unique=True)
-    name = models.CharField("название", max_length=100)
-    is_active = models.BooleanField("активно", default=True)
-    created_at = models.DateTimeField("создано", auto_now_add=True)
-    updated_at = models.DateTimeField("обновлено", auto_now=True)
-
-    class Meta:
-        """Настройки справочника состояний деталей."""
-
-        ordering = ["code"]
-        verbose_name = "состояние детали"
-        verbose_name_plural = "состояния деталей"
-
-    def __str__(self) -> str:
-        """Вернуть название состояния детали."""
-
-        return self.name
-
-
 class Work(models.Model):
     """Рабочая смена пользователя на конкретном станке.
 
@@ -152,7 +130,7 @@ class Detail(models.Model):
     work = models.ForeignKey(Work, verbose_name="смена", on_delete=models.PROTECT, related_name="details")
     detail_number = models.IntegerField("номер детали")
     detail_type = models.ForeignKey(DetailType, verbose_name="тип детали", on_delete=models.PROTECT, related_name="details")
-    detail_state = models.ForeignKey(DetailState, verbose_name="состояние детали", on_delete=models.PROTECT, related_name="details")
+    quality_percent = models.PositiveSmallIntegerField("качество, %")
     event_time = models.DateTimeField("время события")
     created_at = models.DateTimeField("создана", auto_now_add=True)
     updated_at = models.DateTimeField("обновлена", auto_now=True)
@@ -165,6 +143,10 @@ class Detail(models.Model):
             models.UniqueConstraint(
                 fields=["user", "machine", "work", "detail_number"],
                 name="unique_detail_number_per_work",
+            ),
+            models.CheckConstraint(
+                check=Q(quality_percent__gte=0) & Q(quality_percent__lte=100),
+                name="detail_quality_percent_between_0_and_100",
             ),
         ]
         indexes = [

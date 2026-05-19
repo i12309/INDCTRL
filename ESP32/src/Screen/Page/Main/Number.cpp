@@ -17,6 +17,16 @@ Number& Number::instance() {
     return page;
 }
 
+void Number::showLogin() {
+    mode_ = Mode::Login;
+    show();
+}
+
+void Number::showCloseShift() {
+    mode_ = Mode::CloseShift;
+    show();
+}
+
 void Number::onPrepare() {
     Ui::onPop(objects.kbd_0, Number::popDigit, (void*)"0");
     Ui::onPop(objects.kbd_1, Number::popDigit, (void*)"1");
@@ -70,6 +80,16 @@ void Number::submit() {
     password.trim();
     if (password.length() == 0) return;
 
+    Number& page = instance();
+    if (page.mode_ == Mode::CloseShift) {
+        page.submitCloseShift(password);
+        return;
+    }
+
+    page.submitLogin(password);
+}
+
+void Number::submitLogin(const String& password) {
     LoginResult result = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
     if (!result.success) {
         Ui::setText(objects.kbd_text, "");
@@ -87,6 +107,30 @@ void Number::submit() {
     Data::runtime.machineId = result.machineId;
     Data::runtime.workId = result.workId;
     Process::instance().show();
+}
+
+void Number::submitCloseShift(const String& password) {
+    LoginResult login = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
+    if (!login.success) {
+        Ui::setText(objects.kbd_text, "");
+        back();
+        return;
+    }
+
+    Data::runtime.sessionId = login.sessionId;
+    Data::runtime.userId = login.userId;
+    Data::runtime.machineId = login.machineId;
+    Data::runtime.workId = login.workId;
+
+    ApiResult logout = DeviceApi::logout(Data::runtime.sessionId);
+    if (!logout.success) {
+        Ui::setText(objects.kbd_text, "");
+        Info::showInfo("Ошибка завершения", logout.error.c_str());
+        return;
+    }
+
+    Data::runtime.clearSession();
+    ESP.restart();
 }
 
 }  // namespace Screen

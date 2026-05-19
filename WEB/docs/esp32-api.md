@@ -82,7 +82,7 @@ ESP32 работает с Django API через Nginx. Базовый адрес
   "detail": {
     "number": 1,
     "type": 1,
-    "state": 1
+    "quality": 85
   }
 }
 ```
@@ -120,7 +120,7 @@ ESP32 работает с Django API через Nginx. Базовый адрес
 {
   "success": true,
   "details": [
-    {"number": 1, "state": "OK", "time": "2026-05-18 14:30:00"}
+    {"number": 1, "quality": 85, "state": "85%", "time": "2026-05-18 14:30:00"}
   ]
 }
 ```

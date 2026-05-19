@@ -18,7 +18,8 @@ enum ScreensEnum {
     SCREEN_ID_PROCESS = 5,
     SCREEN_ID_DETAILS = 6,
     SCREEN_ID_INFO = 7,
-    _SCREEN_ID_LAST = 7
+    SCREEN_ID_WAIT = 8,
+    _SCREEN_ID_LAST = 8
 };
 
 typedef struct _objects_t {
@@ -29,6 +30,7 @@ typedef struct _objects_t {
     lv_obj_t *process;
     lv_obj_t *details;
     lv_obj_t *info;
+    lv_obj_t *wait;
     lv_obj_t *obj0;
     lv_obj_t *obj1;
     lv_obj_t *obj2;
@@ -118,6 +120,14 @@ typedef struct _objects_t {
     lv_obj_t *info_field2;
     lv_obj_t *info_field3;
     lv_obj_t *info_ok;
+    lv_obj_t *obj31;
+    lv_obj_t *obj32;
+    lv_obj_t *wait_title;
+    lv_obj_t *obj33;
+    lv_obj_t *wait_field1;
+    lv_obj_t *wait_field2;
+    lv_obj_t *wait_field3;
+    lv_obj_t *obj34;
 } objects_t;
 
 extern objects_t objects;
@@ -142,6 +152,9 @@ void tick_screen_details();
 
 void create_screen_info();
 void tick_screen_info();
+
+void create_screen_wait();
+void tick_screen_wait();
 
 void create_user_widget_123(lv_obj_t *parent_obj, int startWidgetIndex);
 void tick_user_widget_123(int startWidgetIndex);

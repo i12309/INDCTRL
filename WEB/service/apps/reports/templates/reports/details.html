@@ -22,9 +22,9 @@
 
   <div class="row g-3 mb-3">
     <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Всего</div><div class="h3 mb-0">{{ totals.total }}</div></div></div>
-    <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Рабочих</div><div class="h3 mb-0">{{ totals.working }}</div></div></div>
-    <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Брак</div><div class="h3 mb-0">{{ totals.defect }}</div></div></div>
-    <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Не определено</div><div class="h3 mb-0">{{ totals.undefined }}</div></div></div>
+    <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Среднее качество</div><div class="h3 mb-0">{% if totals.avg_quality is not None %}{{ totals.avg_quality|floatformat:1 }}%{% else %}-{% endif %}</div></div></div>
+    <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Минимум</div><div class="h3 mb-0">{% if totals.min_quality is not None %}{{ totals.min_quality }}%{% else %}-{% endif %}</div></div></div>
+    <div class="col-md-3"><div class="page-card p-3"><div class="text-secondary small">Максимум</div><div class="h3 mb-0">{% if totals.max_quality is not None %}{{ totals.max_quality }}%{% else %}-{% endif %}</div></div></div>
   </div>
 
   <div class="page-card">
@@ -38,7 +38,7 @@
             <th>Смена</th>
             <th>Номер детали</th>
             <th>Тип детали</th>
-            <th>Состояние</th>
+            <th>Качество</th>
           </tr>
         </thead>
         <tbody>
@@ -50,7 +50,7 @@
               <td>{{ detail.work_id }}</td>
               <td>{{ detail.detail_number }}</td>
               <td>{{ detail.detail_type }}</td>
-              <td>{{ detail.detail_state }}</td>
+              <td>{{ detail.quality_percent }}%</td>
             </tr>
           {% empty %}
             <tr><td colspan="7" class="text-secondary">Деталей по выбранным фильтрам нет.</td></tr>

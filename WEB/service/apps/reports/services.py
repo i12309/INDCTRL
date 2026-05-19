@@ -3,16 +3,11 @@
 from dataclasses import dataclass
 from datetime import datetime, time
 
-from django.db.models import Count, QuerySet
+from django.db.models import Avg, Count, Max, Min, QuerySet
 from django.http import HttpResponse
 from django.utils import timezone
 from openpyxl import Workbook
 
-from apps.constants import (
-    DETAIL_STATE_DEFECT,
-    DETAIL_STATE_UNDEFINED,
-    DETAIL_STATE_WORKING,
-)
 from apps.production.models import Detail
 
 EXPORT_LIMIT = 100_000
@@ -23,9 +18,9 @@ class DetailReportTotals:
     """Итоги отчета по деталям."""
 
     total: int
-    working: int
-    defect: int
-    undefined: int
+    avg_quality: float | None
+    min_quality: int | None
+    max_quality: int | None
 
 
 def _day_start(value) -> datetime:
@@ -52,7 +47,6 @@ def build_detail_queryset(filters: dict) -> QuerySet:
         "machine",
         "work",
         "detail_type",
-        "detail_state",
     ).order_by("-event_time", "-id")
 
     if filters.get("date_from"):
@@ -67,8 +61,10 @@ def build_detail_queryset(filters: dict) -> QuerySet:
         queryset = queryset.filter(work=filters["work"])
     if filters.get("detail_type"):
         queryset = queryset.filter(detail_type=filters["detail_type"])
-    if filters.get("detail_state"):
-        queryset = queryset.filter(detail_state=filters["detail_state"])
+    if filters.get("quality_min") is not None:
+        queryset = queryset.filter(quality_percent__gte=filters["quality_min"])
+    if filters.get("quality_max") is not None:
+        queryset = queryset.filter(quality_percent__lte=filters["quality_max"])
 
     return queryset
 
@@ -76,20 +72,21 @@ def build_detail_queryset(filters: dict) -> QuerySet:
 def calculate_totals(queryset: QuerySet) -> DetailReportTotals:
     """Рассчитать итоги отчета на стороне БД.
 
-    Группировка по коду состояния позволяет получить общие цифры без загрузки всех
-    деталей в память Django-процесса.
+    Агрегация считается на стороне БД, без загрузки всех деталей в память
+    Django-процесса.
     """
 
-    total = queryset.count()
-    by_state = {
-        row["detail_state__code"]: row["count"]
-        for row in queryset.values("detail_state__code").annotate(count=Count("id"))
-    }
+    totals = queryset.aggregate(
+        total=Count("id"),
+        avg_quality=Avg("quality_percent"),
+        min_quality=Min("quality_percent"),
+        max_quality=Max("quality_percent"),
+    )
     return DetailReportTotals(
-        total=total,
-        working=by_state.get(DETAIL_STATE_WORKING, 0),
-        defect=by_state.get(DETAIL_STATE_DEFECT, 0),
-        undefined=by_state.get(DETAIL_STATE_UNDEFINED, 0),
+        total=totals["total"],
+        avg_quality=totals["avg_quality"],
+        min_quality=totals["min_quality"],
+        max_quality=totals["max_quality"],
     )
 
 
@@ -111,7 +108,7 @@ def detail_export_rows(queryset: QuerySet):
             detail.work_id,
             detail.detail_number,
             detail.detail_type.name,
-            detail.detail_state.name,
+            detail.quality_percent,
         ]
 
 
@@ -132,7 +129,7 @@ def build_xlsx_response(queryset: QuerySet, totals: DetailReportTotals) -> HttpR
         "Смена",
         "Номер детали",
         "Тип детали",
-        "Состояние",
+        "Качество, %",
     ]
     sheet.append(headers)
 
@@ -141,9 +138,9 @@ def build_xlsx_response(queryset: QuerySet, totals: DetailReportTotals) -> HttpR
 
     sheet.append([])
     sheet.append(["Всего деталей", totals.total])
-    sheet.append(["Рабочих деталей", totals.working])
-    sheet.append(["Брака", totals.defect])
-    sheet.append(["Не определено", totals.undefined])
+    sheet.append(["Среднее качество, %", totals.avg_quality])
+    sheet.append(["Минимальное качество, %", totals.min_quality])
+    sheet.append(["Максимальное качество, %", totals.max_quality])
 
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

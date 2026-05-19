@@ -73,7 +73,7 @@ def get_dashboard_summary() -> DashboardSummary:
             stale_works += 1
 
     recent_details = list(
-        Detail.objects.select_related("user", "machine", "detail_type", "detail_state")
+        Detail.objects.select_related("user", "machine", "detail_type")
         .order_by("-event_time", "-id")[:8]
     )
 

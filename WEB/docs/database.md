@@ -26,14 +26,14 @@
 - `production_work` - рабочие смены.
 - `production_authsession` - UUID-сессии ESP32.
 - `production_detailtype` - типы деталей.
-- `production_detailstate` - состояния деталей.
-- `production_detail` - произведенные детали.
+- `production_detail` - произведенные детали с качеством `quality_percent` от 0 до 100.
 - `production_invalidevent` - некорректные события API.
 
 ## Важные ограничения и индексы
 
 - `unique_active_work_per_machine` запрещает две активные смены на одном станке.
 - `unique_detail_number_per_work` обеспечивает защиту от дублей деталей.
+- `detail_quality_percent_between_0_and_100` ограничивает качество детали диапазоном 0-100%.
 - `device_mac_address_idx` ускоряет поиск ESP32 по MAC-адресу.
 - Индексы `detail_event_time_idx`, `detail_user_event_time_idx`,
   `detail_machine_event_time_idx`, `detail_work_idx` ускоряют отчеты.

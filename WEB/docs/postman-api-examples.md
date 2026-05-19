@@ -23,7 +23,7 @@ sessionID=11111111-1111-1111-1111-111111111111
 machineID=1
 workID=1
 detailTypeID=1
-detailStateID=1
+qualityPercent=85
 ```
 
 Перед тестами в админке должны быть созданы:
@@ -32,7 +32,7 @@ detailStateID=1
 - активное устройство с `mac_address`, например `AA:BB:CC:DD:EE:FF`;
 - активный пользователь с правом `accounts.use_esp32_api`;
 - активная строка графика для этого пользователя и станка;
-- активные тип и состояние детали.
+- активный тип детали.
 
 API возвращает HTTP 200 и для бизнес-ошибок. Признак ошибки в JSON: `"success": false`.
 
@@ -331,7 +331,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 1,
     "type": {{detailTypeID}},
-    "state": {{detailStateID}}
+    "quality": {{qualityPercent}}
   }
 }
 ```
@@ -366,7 +366,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 2,
     "type": {{detailTypeID}},
-    "state": {{detailStateID}}
+    "quality": {{qualityPercent}}
   }
 }
 ```
@@ -381,7 +381,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 3,
     "type": {{detailTypeID}},
-    "state": {{detailStateID}}
+    "quality": {{qualityPercent}}
   }
 }
 ```
@@ -404,7 +404,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 4,
     "type": {{detailTypeID}},
-    "state": {{detailStateID}}
+    "quality": {{qualityPercent}}
   }
 }
 ```
@@ -446,7 +446,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 0,
     "type": {{detailTypeID}},
-    "state": {{detailStateID}}
+    "quality": {{qualityPercent}}
   }
 }
 ```
@@ -469,7 +469,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 5,
     "type": 999999,
-    "state": {{detailStateID}}
+    "quality": {{qualityPercent}}
   }
 }
 ```
@@ -483,7 +483,7 @@ POST {{baseUrl}}/api/device/detail
 }
 ```
 
-Ошибка: состояние детали не найдено или отключено.
+Ошибка: качество детали вне диапазона.
 
 ```json
 {
@@ -492,7 +492,7 @@ POST {{baseUrl}}/api/device/detail
   "detail": {
     "number": 6,
     "type": {{detailTypeID}},
-    "state": 999999
+    "quality": 999999
   }
 }
 ```
@@ -502,7 +502,7 @@ POST {{baseUrl}}/api/device/detail
 ```json
 {
   "success": false,
-  "error": "Состояние детали не найдено или отключено"
+  "error": "Поле detail.quality должно быть от 0 до 100"
 }
 ```
 

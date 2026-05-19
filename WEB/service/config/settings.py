@@ -134,7 +134,6 @@ JAZZMIN_SETTINGS = {
         "production.AuthSession": "fas fa-id-badge",
         "production.Detail": "fas fa-cogs",
         "production.DetailType": "fas fa-tags",
-        "production.DetailState": "fas fa-check-circle",
         "production.InvalidEvent": "fas fa-exclamation-triangle",
     },
     "default_icon_parents": "fas fa-folder",

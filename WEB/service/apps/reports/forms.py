@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 
 from apps.machines.models import Machine
-from apps.production.models import DetailState, DetailType, Work
+from apps.production.models import DetailType, Work
 
 
 class DetailReportFilterForm(forms.Form):
@@ -40,9 +40,16 @@ class DetailReportFilterForm(forms.Form):
         queryset=DetailType.objects.all().order_by("name"),
         required=False,
     )
-    detail_state = forms.ModelChoiceField(
-        label="Состояние",
-        queryset=DetailState.objects.all().order_by("name"),
+    quality_min = forms.IntegerField(
+        label="Качество от, %",
+        min_value=0,
+        max_value=100,
+        required=False,
+    )
+    quality_max = forms.IntegerField(
+        label="Качество до, %",
+        min_value=0,
+        max_value=100,
         required=False,
     )
 
@@ -52,3 +59,13 @@ class DetailReportFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-control"
+
+    def clean(self) -> dict:
+        """Проверить согласованность диапазона качества."""
+
+        cleaned_data = super().clean()
+        quality_min = cleaned_data.get("quality_min")
+        quality_max = cleaned_data.get("quality_max")
+        if quality_min is not None and quality_max is not None and quality_min > quality_max:
+            raise forms.ValidationError("Минимальное качество не может быть больше максимального")
+        return cleaned_data

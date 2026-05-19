@@ -66,7 +66,7 @@ def details_export_csv(request: HttpRequest) -> HttpResponse:
     response.write("\ufeff")
     writer = csv.writer(response)
     writer.writerow(
-        ["Время события", "Работник", "Станок", "Смена", "Номер детали", "Тип детали", "Состояние"]
+        ["Время события", "Работник", "Станок", "Смена", "Номер детали", "Тип детали", "Качество, %"]
     )
     for row in detail_export_rows(queryset):
         writer.writerow(row)

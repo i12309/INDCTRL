@@ -43,7 +43,7 @@
                   <th>Работник</th>
                   <th>Станок</th>
                   <th>Деталь</th>
-                  <th>Состояние</th>
+                  <th>Качество</th>
                 </tr>
               </thead>
               <tbody>
@@ -53,7 +53,7 @@
                     <td>{{ detail.user }}</td>
                     <td>{{ detail.machine }}</td>
                     <td>{{ detail.detail_number }}</td>
-                    <td>{{ detail.detail_state }}</td>
+                    <td>{{ detail.quality_percent }}%</td>
                   </tr>
                 {% empty %}
                   <tr><td colspan="5" class="text-secondary">Деталей пока нет.</td></tr>

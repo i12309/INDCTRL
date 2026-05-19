@@ -5,7 +5,6 @@ from django.contrib import admin
 from apps.production.models import (
     AuthSession,
     Detail,
-    DetailState,
     DetailType,
     InvalidEvent,
     Work,
@@ -34,16 +33,6 @@ class ReadOnlyAdminMixin:
 @admin.register(DetailType)
 class DetailTypeAdmin(admin.ModelAdmin):
     """Админка типов деталей."""
-
-    list_display = ("code", "name", "is_active", "created_at", "updated_at")
-    list_filter = ("is_active",)
-    search_fields = ("code", "name")
-    readonly_fields = ("created_at", "updated_at")
-
-
-@admin.register(DetailState)
-class DetailStateAdmin(admin.ModelAdmin):
-    """Админка состояний деталей."""
 
     list_display = ("code", "name", "is_active", "created_at", "updated_at")
     list_filter = ("is_active",)
@@ -85,11 +74,11 @@ class DetailAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
     изменение запрещены. Удаление разрешено только superuser как аварийная операция.
     """
 
-    list_display = ("id", "event_time", "user", "machine", "work", "detail_number", "detail_type", "detail_state")
-    list_filter = ("event_time", "machine", "user", "detail_type", "detail_state")
+    list_display = ("id", "event_time", "user", "machine", "work", "detail_number", "detail_type", "quality_percent")
+    list_filter = ("event_time", "machine", "user", "detail_type", "quality_percent")
     search_fields = ("detail_number", "user__username", "user__full_name", "machine__name")
     date_hierarchy = "event_time"
-    list_select_related = ("user", "machine", "work", "detail_type", "detail_state")
+    list_select_related = ("user", "machine", "work", "detail_type")
 
     def has_delete_permission(self, request, obj=None) -> bool:
         """Разрешить удаление деталей только superuser."""

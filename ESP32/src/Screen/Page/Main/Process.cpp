@@ -5,6 +5,7 @@
 #include "Data.h"
 #include "Screen/Page/Main/Details.h"
 #include "Screen/Page/Main/Info.h"
+#include "Screen/Page/Main/Number.h"
 #include "Screen/Panel/LvglHelpers.h"
 #include "Service/DeviceApi.h"
 
@@ -52,14 +53,7 @@ void Process::popDetails(lv_event_t* e) {
 
 void Process::popClose(lv_event_t* e) {
     (void)e;
-    ApiResult result = DeviceApi::logout(Data::runtime.sessionId);
-    if (!result.success) {
-        Info::showInfo("Ошибка завершения", result.error.c_str());
-        return;
-    }
-
-    Data::runtime.clearSession();
-    ESP.restart();
+    Number::instance().showCloseShift();
 }
 
 }  // namespace Screen

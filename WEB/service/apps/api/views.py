@@ -20,7 +20,7 @@ from apps.constants import (
     WORK_STATUS_FINISHED,
 )
 from apps.machines.models import Device
-from apps.production.models import AuthSession, Detail, DetailState, DetailType, InvalidEvent, Work
+from apps.production.models import AuthSession, Detail, DetailType, InvalidEvent, Work
 from apps.schedules.models import UserMachineSchedule
 
 # ESP32 не работает как браузер и не хранит Django CSRF cookie, поэтому device API
@@ -78,6 +78,18 @@ def _positive_int(value, field_name: str) -> int:
         raise ApiError(f"Поле {field_name} должно быть числом") from exc
     if result <= 0:
         raise ApiError(f"Поле {field_name} должно быть больше нуля")
+    return result
+
+
+def _int_between(value, field_name: str, min_value: int, max_value: int) -> int:
+    """Проверить, что значение является целым числом в заданном диапазоне."""
+
+    try:
+        result = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ApiError(f"Поле {field_name} должно быть числом") from exc
+    if result < min_value or result > max_value:
+        raise ApiError(f"Поле {field_name} должно быть от {min_value} до {max_value}")
     return result
 
 
@@ -411,15 +423,15 @@ def device_detail(request: HttpRequest) -> JsonResponse:
 
         detail_number = _positive_int(_required(detail_payload, "number"), "detail.number")
         detail_type_id = _positive_int(_required(detail_payload, "type"), "detail.type")
-        detail_state_id = _positive_int(_required(detail_payload, "state"), "detail.state")
+        quality_value = detail_payload.get("quality", detail_payload.get("qualityPercent", detail_payload.get("state")))
+        if quality_value in (None, ""):
+            raise ApiError("Поле detail.quality обязательно")
+        quality_percent = _int_between(quality_value, "detail.quality", 0, 100)
         event_time = _parse_event_time(str(_required(payload, "time")))
 
         detail_type = DetailType.objects.filter(id=detail_type_id, is_active=True).first()
         if detail_type is None:
             raise ApiError("Тип детали не найден или отключен")
-        detail_state = DetailState.objects.filter(id=detail_state_id, is_active=True).first()
-        if detail_state is None:
-            raise ApiError("Состояние детали не найдено или отключено")
 
         now = timezone.now()
         with transaction.atomic():
@@ -430,7 +442,7 @@ def device_detail(request: HttpRequest) -> JsonResponse:
                 detail_number=detail_number,
                 defaults={
                     "detail_type": detail_type,
-                    "detail_state": detail_state,
+                    "quality_percent": quality_percent,
                     "event_time": event_time,
                 },
             )
@@ -454,11 +466,11 @@ def device_details(request: HttpRequest) -> JsonResponse:
         details = [
             {
                 "number": detail.detail_number,
-                "state": detail.detail_state.name,
+                "quality": detail.quality_percent,
+                "state": f"{detail.quality_percent}%",
                 "time": timezone.localtime(detail.event_time).strftime("%Y-%m-%d %H:%M:%S"),
             }
-            for detail in Detail.objects.select_related("detail_state")
-            .filter(work=session.work)
+            for detail in Detail.objects.filter(work=session.work)
             .order_by("detail_number", "event_time", "id")
         ]
     except ApiError as exc:
