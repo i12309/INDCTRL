@@ -8,11 +8,13 @@
 
 struct ApiResult {
     bool success = false;
+    bool timedOut = false;
     String error;
 };
 
 struct LoginResult {
     bool success = false;
+    bool timedOut = false;
     String error;
     String sessionId;
     int userId = 0;

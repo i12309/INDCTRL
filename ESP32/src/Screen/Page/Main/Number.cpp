@@ -92,6 +92,8 @@ void Number::submit() {
 void Number::submitLogin(const String& password) {
     LoginResult result = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
     if (!result.success) {
+        if (result.timedOut) return;
+
         Ui::setText(objects.kbd_text, "");
         if (result.error.indexOf("занят") >= 0) {
             Info::showRestart("Ошибка входа", result.error.c_str());
@@ -112,6 +114,8 @@ void Number::submitLogin(const String& password) {
 void Number::submitCloseShift(const String& password) {
     LoginResult login = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
     if (!login.success) {
+        if (login.timedOut) return;
+
         Ui::setText(objects.kbd_text, "");
         back();
         return;
@@ -124,6 +128,8 @@ void Number::submitCloseShift(const String& password) {
 
     ApiResult logout = DeviceApi::logout(Data::runtime.sessionId);
     if (!logout.success) {
+        if (logout.timedOut) return;
+
         Ui::setText(objects.kbd_text, "");
         Info::showInfo("Ошибка завершения", logout.error.c_str());
         return;

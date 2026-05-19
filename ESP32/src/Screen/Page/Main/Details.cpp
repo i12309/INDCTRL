@@ -72,6 +72,8 @@ void Details::loadDetails() {
 
     ApiResult result = DeviceApi::loadDetails(Data::runtime.sessionId, Data::runtime.details);
     if (!result.success) {
+        if (result.timedOut) return;
+
         Info::showInfo("Ошибка деталей", result.error.c_str());
     }
 }

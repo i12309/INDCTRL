@@ -1,5 +1,6 @@
 #include "WiFiConfig.h"
 
+#include "Screen/Page/Main/Wait.h"
 #include "Service/Log.h"
 
 WiFiConfig& WiFiConfig::instance() {
@@ -13,6 +14,8 @@ void WiFiConfig::init() {
 
 bool WiFiConfig::connect(const char* ssid, const char* password, uint32_t timeoutMs) {
     if (ssid == nullptr || ssid[0] == '\0') return false;
+
+    Screen::WaitGuard wait("Подключение Wi-Fi");
 
     WiFi.begin(ssid, password == nullptr ? "" : password);
     const uint32_t start = millis();

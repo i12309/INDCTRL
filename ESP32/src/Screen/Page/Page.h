@@ -16,6 +16,8 @@ public:
     static void process();
     static Page* activePage();
     static Page* previousPage();
+    static bool restorePrevious(bool callOnShow = true);
+    static bool reloadActive(bool callOnShow = false);
 
 protected:
     virtual void onPrepare() {}

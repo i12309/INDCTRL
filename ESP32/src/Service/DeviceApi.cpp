@@ -6,7 +6,10 @@
 
 ApiResult DeviceApi::resultFromResponse(bool httpOk, JsonDocument& response) {
     ApiResult result;
+    result.timedOut = Service::api().lastError() == ApiClient::Error::Timeout;
     result.success = httpOk && response["success"].as<bool>();
+    if (result.timedOut) return result;
+
     if (!result.success) {
         const char* error = response["error"] | "Ошибка API";
         result.error = error;
@@ -22,7 +25,10 @@ ApiResult DeviceApi::loadWorkers(const String& macAddress,
     JsonDocument response;
     request["macAddress"] = macAddress;
 
-    ApiResult result = resultFromResponse(Service::api().postJson("/api/device/workers", request, response), response);
+    ApiResult result = resultFromResponse(
+        Service::api().postJson("/api/device/workers", request, response, "Загрузка сотрудников"),
+        response
+    );
     if (!result.success) return result;
 
     machineId = response["machineID"] | 0;
@@ -47,9 +53,13 @@ LoginResult DeviceApi::login(int userId, const String& password, const String& m
     request["password"] = password;
     request["macAddress"] = macAddress;
 
-    ApiResult api = resultFromResponse(Service::api().postJson("/api/device/login", request, response), response);
+    ApiResult api = resultFromResponse(
+        Service::api().postJson("/api/device/login", request, response, "Вход сотрудника"),
+        response
+    );
     LoginResult result;
     result.success = api.success;
+    result.timedOut = api.timedOut;
     result.error = api.error;
     if (!result.success) return result;
 
@@ -64,14 +74,20 @@ ApiResult DeviceApi::logout(const String& sessionId) {
     JsonDocument request;
     JsonDocument response;
     request["sessionID"] = sessionId;
-    return resultFromResponse(Service::api().postJson("/api/device/logout", request, response), response);
+    return resultFromResponse(
+        Service::api().postJson("/api/device/logout", request, response, "Завершение смены"),
+        response
+    );
 }
 
 ApiResult DeviceApi::heartbeat(const String& sessionId) {
     JsonDocument request;
     JsonDocument response;
     request["sessionID"] = sessionId;
-    return resultFromResponse(Service::api().postJson("/api/device/heartbeat", request, response), response);
+    return resultFromResponse(
+        Service::api().postJson("/api/device/heartbeat", request, response, "Проверка связи"),
+        response
+    );
 }
 
 ApiResult DeviceApi::loadDetails(const String& sessionId, std::vector<DetailData>& details) {
@@ -79,7 +95,10 @@ ApiResult DeviceApi::loadDetails(const String& sessionId, std::vector<DetailData
     JsonDocument response;
     request["sessionID"] = sessionId;
 
-    ApiResult result = resultFromResponse(Service::api().postJson("/api/device/details", request, response), response);
+    ApiResult result = resultFromResponse(
+        Service::api().postJson("/api/device/details", request, response, "Загрузка деталей"),
+        response
+    );
     if (!result.success) return result;
 
     details.clear();

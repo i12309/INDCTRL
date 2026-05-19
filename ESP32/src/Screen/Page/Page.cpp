@@ -27,8 +27,12 @@ void Page::hide() {
 }
 
 void Page::back() {
+    (void)restorePrevious(true);
+}
+
+bool Page::restorePrevious(bool callOnShow) {
     Page* target = previousPage_;
-    if (target == nullptr || target == this) return;
+    if (target == nullptr || target == activePage_) return false;
 
     previousPage_ = nullptr;
     if (activePage_ != nullptr && activePage_ != target) {
@@ -38,7 +42,17 @@ void Page::back() {
     activePage_ = target;
     target->prepareOnce();
     loadScreen(target->screenId_);
-    target->onShow();
+    if (callOnShow) target->onShow();
+    return true;
+}
+
+bool Page::reloadActive(bool callOnShow) {
+    if (activePage_ == nullptr) return false;
+
+    activePage_->prepareOnce();
+    loadScreen(activePage_->screenId_);
+    if (callOnShow) activePage_->onShow();
+    return true;
 }
 
 void Page::process() {

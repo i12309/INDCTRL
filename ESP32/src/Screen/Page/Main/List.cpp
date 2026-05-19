@@ -57,6 +57,8 @@ bool List::loadWorkers() {
         Data::runtime.workers
     );
     if (!result.success) {
+        if (result.timedOut) return false;
+
         Data::runtime.workers.clear();
         const bool isMacError = result.error.indexOf("MAC") >= 0 || result.error.indexOf("mac") >= 0;
         if (isMacError) {

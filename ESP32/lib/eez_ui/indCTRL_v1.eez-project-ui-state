@@ -1,6 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[indCTRL_v1.eez-project]:/userPages/2",
+    "selectedUserPageObject": "[indCTRL_v1.eez-project]:/userPages/7",
     "subnavigationSelectedItems": {}
   },
   "layoutModel": {
@@ -173,8 +173,7 @@
                       "enableClose": false,
                       "icon": "svg:hierarchy"
                     }
-                  ],
-                  "active": true
+                  ]
                 },
                 {
                   "type": "tabset",
@@ -204,15 +203,16 @@
                 {
                   "type": "tab",
                   "id": "#736136e7-7345-484a-bb3c-9793f444b073",
-                  "name": "List",
+                  "name": "Wait",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[indCTRL_v1.eez-project]:/userPages/2",
+                    "objectPath": "[indCTRL_v1.eez-project]:/userPages/7",
                     "permanent": false
                   },
                   "icon": "svg:page"
                 }
-              ]
+              ],
+              "active": true
             },
             {
               "type": "tabset",
@@ -2003,7 +2003,31 @@
     },
     "[indCTRL_v1.eez-project]:/userPages/7[flow-state]": {
       "selectionFront": {},
-      "selectionBack": {},
+      "selectionBack": {
+        "0": {
+          "0": {
+            "0": {
+              "0": {
+                "0": {}
+              }
+            },
+            "1": {
+              "0": {
+                "0": {}
+              },
+              "1": {
+                "0": {}
+              },
+              "2": {
+                "0": {}
+              },
+              "3": {
+                "0": {}
+              }
+            }
+          }
+        }
+      },
       "transform": {
         "translate": {
           "x": -400,
@@ -2230,7 +2254,8 @@
   "lvglPart": "MAIN",
   "lvglState": "DEFAULT",
   "lvglExpandedPropertiesGroup": [
-    "TEXT"
+    "TEXT",
+    "POSITION AND SIZE"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
