@@ -5,6 +5,7 @@
 
 namespace Ui {
 
+// Найти первый label внутри объекта; нужен для кнопок EEZ, где текст лежит дочерним label.
 inline lv_obj_t* firstLabel(lv_obj_t* obj) {
     if (obj == nullptr) return nullptr;
 
@@ -17,15 +18,18 @@ inline lv_obj_t* firstLabel(lv_obj_t* obj) {
     return nullptr;
 }
 
+// Привязать обработчик отпускания кнопки к LVGL-объекту.
 inline void onPop(lv_obj_t* obj, lv_event_cb_t cb, void* userData = nullptr) {
     if (obj == nullptr || cb == nullptr) return;
     lv_obj_add_event_cb(obj, cb, LV_EVENT_RELEASED, userData);
 }
 
+// Установить текст в label, textarea или внутренний label контейнера/кнопки.
 inline void setText(lv_obj_t* obj, const String& text) {
     if (obj == nullptr) return;
 
     const char* value = text.c_str();
+    // Label и textarea обновляются разными API LVGL, поэтому тип проверяется явно.
     if (lv_obj_check_type(obj, &lv_label_class)) {
         lv_label_set_text(obj, value);
         return;
@@ -40,10 +44,12 @@ inline void setText(lv_obj_t* obj, const String& text) {
     if (label != nullptr) lv_label_set_text(label, value);
 }
 
+// Перегрузка для C-строк, чтобы вызовы из экранов были короче.
 inline void setText(lv_obj_t* obj, const char* text) {
     setText(obj, String(text == nullptr ? "" : text));
 }
 
+// Прочитать текст из label, textarea или внутреннего label.
 inline String getText(lv_obj_t* obj) {
     if (obj == nullptr) return "";
 
@@ -61,6 +67,7 @@ inline String getText(lv_obj_t* obj) {
     return "";
 }
 
+// Скрыть или показать объект без пересоздания экрана.
 inline void setHidden(lv_obj_t* obj, bool hidden) {
     if (obj == nullptr) return;
     if (hidden) {

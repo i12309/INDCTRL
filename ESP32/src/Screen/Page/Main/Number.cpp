@@ -13,21 +13,25 @@ namespace Screen {
 
 Number::Number() : Page(SCREEN_ID_NUMBER) {}
 
+// Вернуть singleton страницы.
 Number& Number::instance() {
     static Number page;
     return page;
 }
 
+// Открыть клавиатуру для входа работника.
 void Number::showLogin() {
     mode_ = Mode::Login;
     show();
 }
 
+// Открыть клавиатуру для подтверждения закрытия смены.
 void Number::showCloseShift() {
     mode_ = Mode::CloseShift;
     show();
 }
 
+// Привязать обработчики всех кнопок PIN-клавиатуры.
 void Number::onPrepare() {
     Ui::onPop(objects.kbd_0, Number::popDigit, (void*)"0");
     Ui::onPop(objects.kbd_1, Number::popDigit, (void*)"1");
@@ -44,20 +48,25 @@ void Number::onPrepare() {
     Ui::onPop(objects.kbd_ok, Number::popOk);
 }
 
+// Очистить поле PIN при каждом показе.
 void Number::onShow() {
     Ui::setText(objects.kbd_text, "");
 }
 
+// Добавить нажатую цифру в поле PIN.
 void Number::popDigit(lv_event_t* e) {
     const char* digit = static_cast<const char*>(lv_event_get_user_data(e));
+    // userData обязан содержать строку цифры; без нее кнопку игнорируем.
     if (digit == nullptr) return;
 
     String value = Ui::getText(objects.kbd_text);
+    // Ограничение защищает от бесконечного роста строки при случайном удержании/многоклике.
     if (value.length() >= 32) return;
     value += digit;
     Ui::setText(objects.kbd_text, value);
 }
 
+// Удалить последнюю цифру PIN.
 void Number::popBackspace(lv_event_t* e) {
     (void)e;
     String value = Ui::getText(objects.kbd_text);
@@ -66,8 +75,10 @@ void Number::popBackspace(lv_event_t* e) {
     Ui::setText(objects.kbd_text, value);
 }
 
+// Отменить ввод и вернуться на экран, соответствующий режиму клавиатуры.
 void Number::popCancel(lv_event_t* e) {
     (void)e;
+    // При закрытии смены возвращаемся на Process явно, потому что Info может сбросить previousPage.
     if (instance().mode_ == Mode::CloseShift) {
         Process::instance().show();
         return;
@@ -75,17 +86,21 @@ void Number::popCancel(lv_event_t* e) {
     List::instance().show();
 }
 
+// Подтвердить введенный PIN.
 void Number::popOk(lv_event_t* e) {
     (void)e;
     submit();
 }
 
+// Выбрать действие по текущему режиму клавиатуры.
 void Number::submit() {
     String password = Ui::getText(objects.kbd_text);
     password.trim();
+    // Пустой PIN не отправляем на сервер, чтобы не показывать лишнюю ошибку API.
     if (password.length() == 0) return;
 
     Number& page = instance();
+    // Один экран используется для двух сценариев: login и подтверждение logout.
     if (page.mode_ == Mode::CloseShift) {
         page.submitCloseShift(password);
         return;
@@ -94,12 +109,15 @@ void Number::submit() {
     page.submitLogin(password);
 }
 
+// Отправить login и сохранить данные сессии из ответа сервера.
 void Number::submitLogin(const String& password) {
     LoginResult result = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
     if (!result.success) {
+        // При таймауте WaitGuard уже вернул UI, оставляем экран без дополнительной ошибки.
         if (result.timedOut) return;
 
         Ui::setText(objects.kbd_text, "");
+        // Занятый станок требует перезапуска, чтобы пользователь видел актуальное состояние после OK.
         if (result.error.indexOf("занят") >= 0) {
             Info::showRestart("Ошибка входа", result.error.c_str());
             return;
@@ -116,9 +134,11 @@ void Number::submitLogin(const String& password) {
     Process::instance().show();
 }
 
+// Отправить logout текущей сессии и перезапустить устройство после успешного закрытия.
 void Number::submitCloseShift(const String& password) {
     ApiResult logout = DeviceApi::logout(Data::runtime.sessionId, password);
     if (!logout.success) {
+        // Таймаут не очищает сессию, чтобы пользователь мог повторить закрытие.
         if (logout.timedOut) return;
 
         Ui::setText(objects.kbd_text, "");

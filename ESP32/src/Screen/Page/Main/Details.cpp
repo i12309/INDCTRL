@@ -10,8 +10,10 @@
 namespace Screen {
 
 namespace {
+// Количество строк деталей, помещающихся на экране.
 constexpr size_t PAGE_SIZE = 6;
 
+// Вернуть label номера детали по индексу строки.
 lv_obj_t* paramAt(size_t index) {
     lv_obj_t* items[] = {
         objects.details_param1,
@@ -24,6 +26,7 @@ lv_obj_t* paramAt(size_t index) {
     return index < PAGE_SIZE ? items[index] : nullptr;
 }
 
+// Вернуть label состояния детали по индексу строки.
 lv_obj_t* valueAt(size_t index) {
     lv_obj_t* items[] = {
         objects.details_value1,
@@ -36,6 +39,7 @@ lv_obj_t* valueAt(size_t index) {
     return index < PAGE_SIZE ? items[index] : nullptr;
 }
 
+// Вернуть label времени детали по индексу строки.
 lv_obj_t* timeAt(size_t index) {
     lv_obj_t* items[] = {
         objects.details_time1,
@@ -51,33 +55,40 @@ lv_obj_t* timeAt(size_t index) {
 
 Details::Details() : Page(SCREEN_ID_DETAILS) {}
 
+// Вернуть singleton страницы.
 Details& Details::instance() {
     static Details page;
     return page;
 }
 
+// Подключить кнопки листания.
 void Details::onPrepare() {
     Ui::onPop(objects.details_back, Details::popBack);
     Ui::onPop(objects.details_next, Details::popNext);
 }
 
+// При каждом входе начинаем с первой страницы и обновляем список с сервера.
 void Details::onShow() {
     offset_ = 0;
     loadDetails();
     render();
 }
 
+// Загрузить детали активной смены.
 void Details::loadDetails() {
+    // Без sessionID сервер не сможет понять, какую смену показывать.
     if (Data::runtime.sessionId.length() == 0) return;
 
     ApiResult result = DeviceApi::loadDetails(Data::runtime.sessionId, Data::runtime.details);
     if (!result.success) {
+        // Таймаут оставляет пользователя на текущем экране без всплывающей ошибки.
         if (result.timedOut) return;
 
         Info::showInfo("Ошибка деталей", result.error.c_str());
     }
 }
 
+// Отрисовать текущую страницу деталей.
 void Details::render() {
     const size_t total = Data::runtime.details.size();
     Ui::setHidden(objects.details_next, offset_ + PAGE_SIZE >= total);
@@ -90,6 +101,7 @@ void Details::render() {
         Ui::setHidden(valueAt(i), !visible);
         Ui::setHidden(timeAt(i), !visible);
 
+        // Невидимые строки не заполняем, чтобы не мигали старые значения.
         if (!visible) continue;
 
         const DetailData& detail = Data::runtime.details[detailIndex];
@@ -99,6 +111,7 @@ void Details::render() {
     }
 }
 
+// Листнуть назад или вернуться на Process с первой страницы.
 void Details::popBack(lv_event_t* e) {
     (void)e;
     Details& page = instance();
@@ -111,6 +124,7 @@ void Details::popBack(lv_event_t* e) {
     page.back();
 }
 
+// Листнуть вперед, если есть следующая страница деталей.
 void Details::popNext(lv_event_t* e) {
     (void)e;
     Details& page = instance();
