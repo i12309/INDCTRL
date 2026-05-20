@@ -18,6 +18,11 @@ void Boot::onEnter() {
 }
 
 State* Boot::tick() {
+    if (readyForUser_) {
+        if (Screen::Load::instance().continueRequested()) return new Idle();
+        return this;
+    }
+
     if (millis() - startedAtMs_ < Config::BOOT_SCREEN_MS) return this;
 
     if (!wifiChecked_) {
@@ -25,12 +30,14 @@ State* Boot::tick() {
 
         for (uint8_t attempt = 1; attempt <= Config::WIFI_CONNECT_ATTEMPTS; ++attempt) {
             Log::info("WiFi connect attempt %u/%u", attempt, Config::WIFI_CONNECT_ATTEMPTS);
-            if (WiFiConfig::instance().connect(
+                if (WiFiConfig::instance().connect(
                     Config::WIFI_SSID,
                     Config::WIFI_PASSWORD,
                     Config::WIFI_CONNECT_TIMEOUT_MS
                 )) {
-                return new Idle();
+                readyForUser_ = true;
+                if (Screen::Load::instance().continueRequested()) return new Idle();
+                return this;
             }
         }
 
@@ -40,5 +47,7 @@ State* Boot::tick() {
     }
 
     if (wifiFailed_) return this;
-    return new Idle();
+    readyForUser_ = true;
+    if (Screen::Load::instance().continueRequested()) return new Idle();
+    return this;
 }

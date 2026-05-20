@@ -106,6 +106,20 @@ def test_esp32_close_shift_logs_out_current_session_without_relogin() -> None:
     assert "session.user.check_password" in logout_body
 
 
+def test_esp32_load_screen_waits_for_touch_before_worker_list() -> None:
+    """After boot, List should appear only after a touch on the Load screen."""
+
+    load_h = read_repo("ESP32/src/Screen/Page/Main/Load.h")
+    load_cpp = read_repo("ESP32/src/Screen/Page/Main/Load.cpp")
+    boot_cpp = read_repo("ESP32/src/State/System/Boot.cpp")
+
+    assert "bool continueRequested() const" in load_h
+    assert "registerContinueTarget(objects.load)" in load_cpp
+    assert "LV_EVENT_PRESSED" in load_cpp
+    assert "readyForUser_" in boot_cpp
+    assert "if (Screen::Load::instance().continueRequested()) return new Idle();" in boot_cpp
+
+
 def test_machine_access_comes_only_from_schedules() -> None:
     """Допуск к станку должен определяться строками графика, без отдельной модели разрешений."""
 

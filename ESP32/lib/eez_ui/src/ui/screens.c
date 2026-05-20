@@ -319,7 +319,7 @@ void create_screen_load() {
                     // Load_MACaddress
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.load_ma_caddress = obj;
-                    lv_obj_set_pos(obj, LV_PCT(13), LV_PCT(80));
+                    lv_obj_set_pos(obj, LV_PCT(17), LV_PCT(80));
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_label_set_text_static(obj, "MAC_address");
                 }
@@ -327,7 +327,7 @@ void create_screen_load() {
                     // Load_Version
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.load_version = obj;
-                    lv_obj_set_pos(obj, LV_PCT(80), LV_PCT(80));
+                    lv_obj_set_pos(obj, LV_PCT(75), LV_PCT(80));
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_label_set_text_static(obj, "Version");
                 }
