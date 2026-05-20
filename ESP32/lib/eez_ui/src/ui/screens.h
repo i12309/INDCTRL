@@ -14,11 +14,11 @@ enum ScreensEnum {
     SCREEN_ID_LOAD0 = 1,
     SCREEN_ID_LOAD = 2,
     SCREEN_ID_LIST = 3,
-    SCREEN_ID_NUMBER = 4,
-    SCREEN_ID_PROCESS = 5,
-    SCREEN_ID_DETAILS = 6,
-    SCREEN_ID_INFO = 7,
-    SCREEN_ID_WAIT = 8,
+    SCREEN_ID_PROCESS = 4,
+    SCREEN_ID_DETAILS = 5,
+    SCREEN_ID_INFO = 6,
+    SCREEN_ID_WAIT = 7,
+    SCREEN_ID_NUMBER = 8,
     _SCREEN_ID_LAST = 8
 };
 
@@ -26,11 +26,11 @@ typedef struct _objects_t {
     lv_obj_t *load0;
     lv_obj_t *load;
     lv_obj_t *list;
-    lv_obj_t *number;
     lv_obj_t *process;
     lv_obj_t *details;
     lv_obj_t *info;
     lv_obj_t *wait;
+    lv_obj_t *number;
     lv_obj_t *obj0;
     lv_obj_t *obj1;
     lv_obj_t *obj2;
@@ -56,21 +56,6 @@ typedef struct _objects_t {
     lv_obj_t *list_item_4;
     lv_obj_t *list_item_5;
     lv_obj_t *list_item_6;
-    lv_obj_t *kbd_text;
-    lv_obj_t *kbd_key;
-    lv_obj_t *kbd_1;
-    lv_obj_t *kbd_2;
-    lv_obj_t *kbd_3;
-    lv_obj_t *kbd_4;
-    lv_obj_t *kbd_5;
-    lv_obj_t *kbd_6;
-    lv_obj_t *kbd_7;
-    lv_obj_t *kbd_8;
-    lv_obj_t *kbd_9;
-    lv_obj_t *kbd_cancel;
-    lv_obj_t *kbd_0;
-    lv_obj_t *kbd_backspace;
-    lv_obj_t *kbd_ok;
     lv_obj_t *obj15;
     lv_obj_t *obj16;
     lv_obj_t *process_title;
@@ -128,6 +113,23 @@ typedef struct _objects_t {
     lv_obj_t *wait_field2;
     lv_obj_t *wait_field3;
     lv_obj_t *obj34;
+    lv_obj_t *kbd_text;
+    lv_obj_t *kbd_1;
+    lv_obj_t *kbd_2;
+    lv_obj_t *kbd_3;
+    lv_obj_t *kbd_ok;
+    lv_obj_t *kbd_4;
+    lv_obj_t *kbd_5;
+    lv_obj_t *kbd_6;
+    lv_obj_t *kbd_backspace;
+    lv_obj_t *kbd_7;
+    lv_obj_t *kbd_8;
+    lv_obj_t *kbd_9;
+    lv_obj_t *kbd_cancel;
+    lv_obj_t *obj35;
+    lv_obj_t *kbd_0;
+    lv_obj_t *obj36;
+    lv_obj_t *obj37;
 } objects_t;
 
 extern objects_t objects;
@@ -141,9 +143,6 @@ void tick_screen_load();
 void create_screen_list();
 void tick_screen_list();
 
-void create_screen_number();
-void tick_screen_number();
-
 void create_screen_process();
 void tick_screen_process();
 
@@ -155,6 +154,9 @@ void tick_screen_info();
 
 void create_screen_wait();
 void tick_screen_wait();
+
+void create_screen_number();
+void tick_screen_number();
 
 void create_user_widget_123(lv_obj_t *parent_obj, int startWidgetIndex);
 void tick_user_widget_123(int startWidgetIndex);
