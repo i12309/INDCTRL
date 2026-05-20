@@ -54,6 +54,8 @@ def test_esp32_api_uses_new_urls() -> None:
     """Документация должна описывать новые Django API URL."""
 
     docs = read("docs/esp32-api.md")
+    config_urls = read("service/config/urls.py")
+    device_api_cpp = read_repo("ESP32/src/Service/DeviceApi.cpp")
 
     for url in (
         "/api/device/workers",
@@ -66,6 +68,8 @@ def test_esp32_api_uses_new_urls() -> None:
 
     assert "/api/auth" not in docs
     assert "/api/events" not in docs
+    assert 'path("login/pin", api_views.device_login, name="device_login_pin")' in config_urls
+    assert 'postJson("/login/pin"' in device_api_cpp
 
 
 def test_esp32_login_reuses_work_by_schedule_interval() -> None:
@@ -96,28 +100,31 @@ def test_esp32_close_shift_logs_out_current_session_without_relogin() -> None:
     logout_body = api_views[api_views.index("def device_logout") :]
 
     assert "DeviceApi::login" not in close_shift_body
-    assert "DeviceApi::logout(Data::runtime.sessionId, password)" in close_shift_body
+    assert "DeviceApi::logout(Data::runtime.sessionId, pin)" in close_shift_body
     assert "mode_ == Mode::CloseShift" in cancel_body
     assert "Process::instance().show()" in cancel_body
-    assert "List::instance().show()" in cancel_body
+    assert "mode_ == Mode::WorkerLogin" in cancel_body
     assert "instance().back()" not in cancel_body
-    assert 'request["password"] = password;' in device_api_cpp
-    assert 'payload.get("password")' in logout_body
-    assert "session.user.check_password" in logout_body
+    assert 'request["pin"] = pin;' in device_api_cpp
+    assert "pin = _device_pin(payload)" in logout_body
+    assert "session.user.check_pin(pin)" in logout_body
 
 
-def test_esp32_load_screen_waits_for_touch_before_worker_list() -> None:
-    """After boot, List should appear only after a touch on the Load screen."""
+def test_esp32_load_screen_waits_for_touch_before_pin_input() -> None:
+    """After boot, PIN input should appear only after a touch on the Load screen."""
 
     load_h = read_repo("ESP32/src/Screen/Page/Main/Load.h")
     load_cpp = read_repo("ESP32/src/Screen/Page/Main/Load.cpp")
     boot_cpp = read_repo("ESP32/src/State/System/Boot.cpp")
+    idle_cpp = read_repo("ESP32/src/State/System/Idle.cpp")
 
     assert "bool continueRequested() const" in load_h
     assert "registerContinueTarget(objects.load)" in load_cpp
     assert "LV_EVENT_PRESSED" in load_cpp
     assert "readyForUser_" in boot_cpp
-    assert "if (Screen::Load::instance().continueRequested()) return new Idle();" in boot_cpp
+    assert "return new Idle();" in boot_cpp
+    assert "Screen::Load::instance().show();" in idle_cpp
+    assert "Screen::Number::instance().showLogin();" in idle_cpp
 
 
 def test_machine_access_comes_only_from_schedules() -> None:

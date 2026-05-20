@@ -130,7 +130,7 @@ void List::popItem(lv_event_t* e) {
     const WorkerData& worker = Data::runtime.workers[workerIndex];
     Data::runtime.userId = worker.userId;
     Data::runtime.workerName = worker.fullName;
-    Number::instance().showLogin();
+    Number::instance().showWorkerLogin();
 }
 
 }  // namespace Screen

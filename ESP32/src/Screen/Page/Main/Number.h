@@ -13,6 +13,8 @@ public:
     static Number& instance();
     // Открыть клавиатуру в режиме входа в смену.
     void showLogin();
+    // Открыть клавиатуру после выбора работника администратором.
+    void showWorkerLogin();
     // Открыть клавиатуру в режиме закрытия смены.
     void showCloseShift();
 
@@ -27,6 +29,8 @@ private:
     enum class Mode {
         // Ввод PIN для login.
         Login,
+        // Ввод PIN выбранного работника из админского списка.
+        WorkerLogin,
         // Ввод PIN для подтверждения logout.
         CloseShift,
     };
@@ -45,9 +49,9 @@ private:
     // Разобрать введенный PIN и направить в login или logout.
     static void submit();
     // Выполнить login с выбранным работником и введенным PIN.
-    void submitLogin(const String& password);
+    void submitLogin(const String& pin);
     // Выполнить logout текущей сессии с введенным PIN.
-    void submitCloseShift(const String& password);
+    void submitCloseShift(const String& pin);
 
     // Текущий режим клавиатуры.
     Mode mode_ = Mode::Login;

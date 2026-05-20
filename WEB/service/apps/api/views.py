@@ -69,6 +69,18 @@ def _required(payload: dict, name: str):
     return value
 
 
+def _device_pin(payload: dict) -> str:
+    """Read and validate numeric ESP32 PIN."""
+
+    try:
+        pin = User.normalize_pin(_required(payload, "pin"))
+    except ValueError as exc:
+        raise ApiError(str(exc)) from exc
+    if not pin:
+        raise ApiError("Поле pin обязательно")
+    return pin
+
+
 def _positive_int(value, field_name: str) -> int:
     """Проверить, что значение является положительным целым числом."""
 
@@ -174,6 +186,12 @@ def _user_can_work_now(user: User, machine_id: int, now: datetime) -> bool:
     """Проверить разрешение и активное расписание работника на станке."""
 
     return bool(_current_work_intervals(user, machine_id, now))
+
+
+def _user_is_device_admin(user: User) -> bool:
+    """Return true when a PIN owner should see the worker list on ESP32."""
+
+    return user.is_active and (user.is_staff or user.is_superuser)
 
 
 def _current_work_intervals(user: User, machine_id: int, now: datetime) -> list[tuple[datetime, datetime]]:
@@ -282,19 +300,29 @@ def device_login(request: HttpRequest) -> JsonResponse:
 
     try:
         payload = _request_json(request)
-        user_id = _positive_int(_required(payload, "userID"), "userID")
-        password = str(_required(payload, "password"))
+        pin = _device_pin(payload)
         device = _get_active_device(str(_required(payload, "macAddress")))
 
         user = (
             User.objects.prefetch_related("groups__permissions", "user_permissions")
-            .filter(id=user_id, is_active=True)
+            .filter(pin_hash=User.hash_pin(pin), is_active=True)
             .first()
         )
-        if user is None or not _user_can_use_esp32_api(user):
+        if user is None:
+            raise ApiError("Неверный PIN")
+        if _user_is_device_admin(user):
+            return JsonResponse(
+                {
+                    "success": True,
+                    "isAdmin": True,
+                    "userID": user.id,
+                    "fullName": user.full_name,
+                    "machineID": device.machine_id,
+                    "machineName": device.machine.name,
+                }
+            )
+        if not _user_can_use_esp32_api(user):
             raise ApiError("Пользователь не найден или не является работником")
-        if not user.check_password(password):
-            raise ApiError("Неверный пароль")
 
         now = timezone.now()
         work_intervals = _current_work_intervals(user, device.machine_id, now)
@@ -353,8 +381,10 @@ def device_login(request: HttpRequest) -> JsonResponse:
     return JsonResponse(
         {
             "success": True,
+            "isAdmin": False,
             "sessionID": str(session.id),
             "userID": user.id,
+            "fullName": user.full_name,
             "machineID": device.machine_id,
             "workID": work.id,
         }
@@ -386,9 +416,9 @@ def device_logout(request: HttpRequest) -> JsonResponse:
     try:
         payload = _request_json(request)
         session = _get_active_session(_session_uuid(_required(payload, "sessionID")))
-        password = payload.get("password")
-        if password not in (None, "") and not session.user.check_password(str(password)):
-            raise ApiError("Неверный пароль")
+        pin = _device_pin(payload)
+        if not session.user.check_pin(pin):
+            raise ApiError("Неверный PIN")
         now = timezone.now()
         with transaction.atomic():
             session.is_active = False

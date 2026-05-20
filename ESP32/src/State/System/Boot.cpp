@@ -20,10 +20,9 @@ void Boot::onEnter() {
 
 // Подключить Wi-Fi, затем ждать касания пользователя перед переходом к списку.
 State* Boot::tick() {
-    // Wi-Fi уже готов: дальше не дергаем сеть и только ждем касание Load.
+    // Wi-Fi уже готов: переходим в Idle, где Load ждет касание для ввода PIN.
     if (readyForUser_) {
-        if (Screen::Load::instance().continueRequested()) return new Idle();
-        return this;
+        return new Idle();
     }
 
     // Даем экрану Load стабильно появиться перед тяжелой сетевой операцией.
@@ -41,9 +40,7 @@ State* Boot::tick() {
                     Config::WIFI_CONNECT_TIMEOUT_MS
                 )) {
                 readyForUser_ = true;
-                // Если пользователь уже коснулся Load во время подключения, сразу открываем список.
-                if (Screen::Load::instance().continueRequested()) return new Idle();
-                return this;
+                return new Idle();
             }
         }
 
@@ -56,6 +53,5 @@ State* Boot::tick() {
     // После ошибки Wi-Fi остаемся в Boot, чтобы пользователь видел сообщение и мог перезапустить.
     if (wifiFailed_) return this;
     readyForUser_ = true;
-    if (Screen::Load::instance().continueRequested()) return new Idle();
-    return this;
+    return new Idle();
 }

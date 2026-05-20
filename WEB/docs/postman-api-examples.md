@@ -18,7 +18,7 @@ Content-Type: application/json
 baseUrl=http://localhost
 macAddress=AA:BB:CC:DD:EE:FF
 userID=1
-password=1234
+pin=1234
 sessionID=11111111-1111-1111-1111-111111111111
 machineID=1
 workID=1
@@ -127,15 +127,14 @@ Body:
 ## 3. Login
 
 ```http
-POST {{baseUrl}}/api/device/login
+POST {{baseUrl}}/login/pin
 ```
 
 Body:
 
 ```json
 {
-  "userID": {{userID}},
-  "password": "{{password}}",
+  "pin": "{{pin}}",
   "macAddress": "{{macAddress}}"
 }
 ```
@@ -166,12 +165,11 @@ if (data.success) {
 
 Повторный login тем же работником на том же станке в том же интервале графика должен вернуть новый `sessionID`, но тот же `workID`.
 
-Ошибка: неверный пароль.
+Ошибка: неверный PIN.
 
 ```json
 {
-  "userID": {{userID}},
-  "password": "wrong-password",
+  "pin": "0000",
   "macAddress": "{{macAddress}}"
 }
 ```
@@ -181,7 +179,7 @@ if (data.success) {
 ```json
 {
   "success": false,
-  "error": "Неверный пароль"
+  "error": "Неверный PIN"
 }
 ```
 
@@ -189,8 +187,7 @@ if (data.success) {
 
 ```json
 {
-  "userID": {{userID}},
-  "password": "{{password}}",
+  "pin": "{{pin}}",
   "macAddress": "{{macAddress}}"
 }
 ```
@@ -208,8 +205,7 @@ if (data.success) {
 
 ```json
 {
-  "userID": 999999,
-  "password": "{{password}}",
+  "pin": "{{pin}}",
   "macAddress": "{{macAddress}}"
 }
 ```
@@ -244,8 +240,7 @@ if (data.success) {
 
 ```json
 {
-  "userID": "abc",
-  "password": "{{password}}",
+  "pin": "abc",
   "macAddress": "{{macAddress}}"
 }
 ```
@@ -519,12 +514,11 @@ Body:
 ```json
 {
   "sessionID": "{{sessionID}}",
-  "password": "{{password}}"
+  "pin": "{{pin}}"
 }
 ```
 
-`password` можно не передавать. Если поле есть, сервер проверит пароль
-пользователя текущей активной сессии.
+`pin` обязательно. Сервер проверит PIN пользователя текущей активной сессии.
 
 Ожидаемый успешный ответ:
 
@@ -596,7 +590,7 @@ JSON верхнего уровня не объект, например масс�
 
 1. `GET /health/`
 2. `POST /api/device/workers`
-3. `POST /api/device/login`
+3. `POST /login/pin`
 4. Сохранить `sessionID`, `machineID`, `workID`
 5. `POST /api/device/heartbeat`
 6. `POST /api/device/detail` с `number=1`

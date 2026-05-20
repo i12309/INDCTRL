@@ -3,9 +3,13 @@
 #include "Data.h"
 #include "Screen/Page/Main/Info.h"
 #include "Screen/Page/Main/List.h"
+#include "Screen/Page/Main/Load.h"
 #include "Screen/Page/Main/Process.h"
 #include "Screen/Panel/LvglHelpers.h"
 #include "Service/DeviceApi.h"
+#include "State/State.h"
+#include "State/System/Idle.h"
+#include "State/System/Process.h"
 
 #include <ui/screens.h>
 
@@ -22,6 +26,12 @@ Number& Number::instance() {
 // Открыть клавиатуру для входа работника.
 void Number::showLogin() {
     mode_ = Mode::Login;
+    show();
+}
+
+// Открыть клавиатуру после выбора работника администратором.
+void Number::showWorkerLogin() {
+    mode_ = Mode::WorkerLogin;
     show();
 }
 
@@ -61,7 +71,7 @@ void Number::popDigit(lv_event_t* e) {
 
     String value = Ui::getText(objects.kbd_text);
     // Ограничение защищает от бесконечного роста строки при случайном удержании/многоклике.
-    if (value.length() >= 32) return;
+    if (value.length() >= 10) return;
     value += digit;
     Ui::setText(objects.kbd_text, value);
 }
@@ -83,7 +93,12 @@ void Number::popCancel(lv_event_t* e) {
         Process::instance().show();
         return;
     }
-    List::instance().show();
+    if (instance().mode_ == Mode::WorkerLogin) {
+        List::instance().show();
+        return;
+    }
+    Data::runtime.clearSession();
+    Screen::Load::instance().show();
 }
 
 // Подтвердить введенный PIN.
@@ -94,24 +109,24 @@ void Number::popOk(lv_event_t* e) {
 
 // Выбрать действие по текущему режиму клавиатуры.
 void Number::submit() {
-    String password = Ui::getText(objects.kbd_text);
-    password.trim();
+    String pin = Ui::getText(objects.kbd_text);
+    pin.trim();
     // Пустой PIN не отправляем на сервер, чтобы не показывать лишнюю ошибку API.
-    if (password.length() == 0) return;
+    if (pin.length() == 0) return;
 
     Number& page = instance();
     // Один экран используется для двух сценариев: login и подтверждение logout.
     if (page.mode_ == Mode::CloseShift) {
-        page.submitCloseShift(password);
+        page.submitCloseShift(pin);
         return;
     }
 
-    page.submitLogin(password);
+    page.submitLogin(pin);
 }
 
 // Отправить login и сохранить данные сессии из ответа сервера.
-void Number::submitLogin(const String& password) {
-    LoginResult result = DeviceApi::login(Data::runtime.userId, password, Data::runtime.deviceMac);
+void Number::submitLogin(const String& pin) {
+    LoginResult result = DeviceApi::login(pin, Data::runtime.deviceMac);
     if (!result.success) {
         // При таймауте WaitGuard уже вернул UI, оставляем экран без дополнительной ошибки.
         if (result.timedOut) return;
@@ -127,16 +142,25 @@ void Number::submitLogin(const String& password) {
         return;
     }
 
+    if (result.isAdmin) {
+        Data::runtime.machineId = result.machineId;
+        Data::runtime.machineName = "";
+        Data::runtime.workers.clear();
+        List::instance().show();
+        return;
+    }
+
     Data::runtime.sessionId = result.sessionId;
     Data::runtime.userId = result.userId;
     Data::runtime.machineId = result.machineId;
     Data::runtime.workId = result.workId;
-    Process::instance().show();
+    Data::runtime.workerName = result.fullName;
+    State::set(new ::WorkProcess());
 }
 
 // Отправить logout текущей сессии и перезапустить устройство после успешного закрытия.
-void Number::submitCloseShift(const String& password) {
-    ApiResult logout = DeviceApi::logout(Data::runtime.sessionId, password);
+void Number::submitCloseShift(const String& pin) {
+    ApiResult logout = DeviceApi::logout(Data::runtime.sessionId, pin);
     if (!logout.success) {
         // Таймаут не очищает сессию, чтобы пользователь мог повторить закрытие.
         if (logout.timedOut) return;
@@ -147,7 +171,7 @@ void Number::submitCloseShift(const String& password) {
     }
 
     Data::runtime.clearSession();
-    ESP.restart();
+    State::set(new ::Idle());
 }
 
 }  // namespace Screen

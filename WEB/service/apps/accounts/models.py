@@ -1,5 +1,9 @@
 """Модели сотрудников и учетных записей."""
 
+import hashlib
+import hmac
+
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import ASCIIUsernameValidator
@@ -53,6 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text="Только латинские буквы, цифры и символы @/./+/-/_.",
     )
     full_name = models.CharField("ФИО", max_length=255)
+    pin_hash = models.CharField("ESP32 PIN hash", max_length=64, unique=True, blank=True, null=True)
     is_active = models.BooleanField("активен", default=True)
     is_staff = models.BooleanField("доступ в admin", default=False)
     created_at = models.DateTimeField("создан", auto_now_add=True)
@@ -79,3 +84,37 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Вернуть ФИО или логин пользователя."""
 
         return self.full_name or self.username
+
+    @staticmethod
+    def normalize_pin(pin: str | int | None) -> str:
+        """Return a validated numeric ESP32 PIN."""
+
+        value = "" if pin is None else str(pin).strip()
+        if not value:
+            return ""
+        if not value.isdigit():
+            raise ValueError("PIN must contain digits only")
+        if len(value) > 10:
+            raise ValueError("PIN must contain no more than 10 digits")
+        return value
+
+    @staticmethod
+    def hash_pin(pin: str | int | None) -> str:
+        """Return deterministic HMAC hash used for unique PIN lookup."""
+
+        value = User.normalize_pin(pin)
+        if not value:
+            return ""
+        key = settings.SECRET_KEY.encode("utf-8")
+        return hmac.new(key, value.encode("utf-8"), hashlib.sha256).hexdigest()
+
+    def set_pin(self, pin: str | int | None) -> None:
+        """Set or clear ESP32 PIN hash."""
+
+        self.pin_hash = self.hash_pin(pin) or None
+
+    def check_pin(self, pin: str | int | None) -> bool:
+        """Check ESP32 PIN without storing it in clear text."""
+
+        expected = self.hash_pin(pin)
+        return bool(expected and self.pin_hash and hmac.compare_digest(self.pin_hash, expected))

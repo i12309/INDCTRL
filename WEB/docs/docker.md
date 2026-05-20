@@ -109,7 +109,8 @@ docker compose logs -f postgres
 ## Маршрутизация Nginx
 
 - `/api/device/workers` -> Django API;
-- `/api/device/login` -> Django API;
+- `/login/pin` -> Django API;
+- `/api/device/login` -> Django API compatibility alias;
 - `/api/device/heartbeat` -> Django API;
 - `/api/device/logout` -> Django API;
 - `/api/device/detail` -> Django API;

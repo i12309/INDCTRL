@@ -22,7 +22,7 @@ Bootstrap лежит локально в `service/static/vendor/bootstrap/`; web
 ## API для ESP32
 
 - `POST /api/device/workers`
-- `POST /api/device/login`
+- `POST /login/pin` (`/api/device/login` остается совместимым alias)
 - `POST /api/device/heartbeat`
 - `POST /api/device/logout`
 - `POST /api/device/detail`

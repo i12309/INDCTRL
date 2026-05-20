@@ -21,7 +21,7 @@ docker compose exec indctrl python manage.py collectstatic --noinput
 ## API для ESP32
 
 - `POST /api/device/workers`
-- `POST /api/device/login`
+- `POST /login/pin` (`/api/device/login` остается совместимым alias)
 - `POST /api/device/heartbeat`
 - `POST /api/device/logout`
 - `POST /api/device/detail`

@@ -28,6 +28,10 @@ struct LoginResult {
     String sessionId;
     // Пользователь, подтвержденный сервером.
     int userId = 0;
+    // true, если PIN принадлежит администратору и смену создавать не нужно.
+    bool isAdmin = false;
+    // ФИО пользователя, найденного сервером по PIN.
+    String fullName;
     // Станок, подтвержденный сервером.
     int machineId = 0;
     // ID рабочей смены, созданной или продолженной сервером.
@@ -40,9 +44,9 @@ public:
     // Загрузить список работников, доступных этому MAC-адресу.
     static ApiResult loadWorkers(const String& macAddress, int& machineId, String& machineName, std::vector<WorkerData>& workers);
     // Выполнить вход работника и получить sessionID активной смены.
-    static LoginResult login(int userId, const String& password, const String& macAddress);
-    // Завершить смену по текущему sessionID; password передается для подтверждения, если введен.
-    static ApiResult logout(const String& sessionId, const String& password = String());
+    static LoginResult login(const String& pin, const String& macAddress);
+    // Завершить смену по текущему sessionID; PIN передается для подтверждения, если введен.
+    static ApiResult logout(const String& sessionId, const String& pin = String());
     // Продлить активность текущей смены на сервере.
     static ApiResult heartbeat(const String& sessionId);
     // Загрузить детали текущей смены для экрана Details.

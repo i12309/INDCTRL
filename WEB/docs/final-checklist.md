@@ -15,7 +15,7 @@
 [ ] worker получил право на станок
 [ ] worker получил расписание
 [ ] POST /api/device/workers возвращает работника
-[ ] POST /api/device/login создает Work и AuthSession
+[ ] POST /login/pin создает Work и AuthSession
 [ ] POST /api/device/detail сохраняет Detail
 [ ] повтор detail возвращает duplicate
 [ ] POST /api/device/heartbeat обновляет last_seen_at

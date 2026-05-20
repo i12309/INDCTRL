@@ -73,16 +73,15 @@ ApiResult DeviceApi::loadWorkers(const String& macAddress,
     return result;
 }
 
-// Выполнить login и разобрать sessionID, userID, machineID и workID.
-LoginResult DeviceApi::login(int userId, const String& password, const String& macAddress) {
+// Выполнить login по PIN и разобрать ответ сервера.
+LoginResult DeviceApi::login(const String& pin, const String& macAddress) {
     JsonDocument request;
     JsonDocument response;
-    request["userID"] = userId;
-    request["password"] = password;
+    request["pin"] = pin;
     request["macAddress"] = macAddress;
 
     ApiResult api = resultFromResponse(
-        Service::api().postJson("/api/device/login", request, response, "Вход сотрудника"),
+        Service::api().postJson("/login/pin", request, response, "Вход сотрудника"),
         response
     );
     LoginResult result;
@@ -92,21 +91,22 @@ LoginResult DeviceApi::login(int userId, const String& password, const String& m
     // При ошибке login оставляем ID нулевыми, экран покажет result.error.
     if (!result.success) return result;
 
+    result.isAdmin = response["isAdmin"] | false;
     result.sessionId = String(response["sessionID"] | "");
     result.userId = response["userID"] | 0;
+    result.fullName = String(response["fullName"] | "");
     result.machineId = response["machineID"] | 0;
     result.workId = response["workID"] | 0;
     return result;
 }
 
 // Завершить текущую смену по sessionID, при наличии PIN передать его серверу.
-ApiResult DeviceApi::logout(const String& sessionId, const String& password) {
+ApiResult DeviceApi::logout(const String& sessionId, const String& pin) {
     JsonDocument request;
     JsonDocument response;
     request["sessionID"] = sessionId;
-    // password опционален для обратной совместимости API, но экран закрытия смены его передает.
-    if (password.length() > 0) {
-        request["password"] = password;
+    if (pin.length() > 0) {
+        request["pin"] = pin;
     }
     return resultFromResponse(
         Service::api().postJson("/api/device/logout", request, response, "Завершение смены"),
